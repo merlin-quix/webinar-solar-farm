@@ -31,6 +31,8 @@ def check_for_danger(row):
 
     if panel_temp > 25 and forecast_temp > 40 and forecast_cloud < 40:
         row["danger"] = True
+    else:
+        row["danger"] = False
 
     return row
 
