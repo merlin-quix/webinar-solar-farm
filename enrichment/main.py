@@ -16,25 +16,22 @@ output_topic = app.topic(os.environ["output"])
 
 sdf = app.dataframe(input_data_topic)
 
+last_config = []
+
 # Filter items out without brake value.
 # sdf = sdf[sdf.contains("Brake")]
 
 # Calculate hopping window of 1s with 200ms steps.
-sdf = sdf.apply(lambda row: float(row["Brake"])) \
-        .hopping_window(1000, 200).mean().final() 
-        
-sdf.print()
+# sdf = sdf.apply(lambda row: float(row["Brake"])) \
+#         .hopping_window(1000, 200).mean().final() 
 
-# Filter only windows where average brake force exceeded 50%.
-sdf = sdf[sdf["value"] > 0.5]
+sdf.print()
 
 # Create nice JSON alert message.
 sdf = sdf.apply(lambda row: {
     "Timestamp": str(datetime.fromtimestamp(row["start"]/1000)),
-    "Alert": {
-        "Title": "Hard braking detected.",
-        "Message": "For last 1 second, average braking power was " + str(row["value"])
-    }
+    "data": row,
+    "configuration": last_config
 })
 
 # Print JSON messages in console.
