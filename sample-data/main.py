@@ -7,57 +7,6 @@ import time
 import os
 import random
 
-# for local dev, you can load env vars from a .env file
-# from dotenv import load_dotenv
-# load_dotenv()
-
-
-class MemoryUsageGenerator(Source):
-    """
-    A Quix Streams Source enables Applications to read data from something other
-    than Kafka and publish it to a desired Kafka topic.
-
-    You provide a Source to an Application, which will handle the Source's lifecycle.
-
-    In this case, we have built a new Source that reads from a static set of
-    already loaded json data representing a server's memory usage over time.
-
-    There are numerous pre-built sources available to use out of the box; see:
-    https://quix.io/docs/quix-streams/connectors/sources/index.html
-    """
-
-    memory_allocation_data = [
-        {"m": "mem", "host": "host1", "used_percent": 64.56, "time": 1577836800000000000},
-        {"m": "mem", "host": "host2", "used_percent": 71.89, "time": 1577836801000000000},
-        {"m": "mem", "host": "host1", "used_percent": 63.27, "time": 1577836803000000000},
-        {"m": "mem", "host": "host2", "used_percent": 73.45, "time": 1577836804000000000},
-        {"m": "mem", "host": "host1", "used_percent": 62.98, "time": 1577836806000000000},
-        {"m": "mem", "host": "host2", "used_percent": 74.33, "time": 1577836808000000000},
-        {"m": "mem", "host": "host1", "used_percent": 65.21, "time": 1577836810000000000},
-    ]
-
-    def run(self):
-        """
-        Each Source must have a `run` method.
-
-        It will include the logic behind your source, contained within a
-        "while self.running" block for exiting when its parent Application stops.
-
-        There a few methods on a Source available for producing to Kafka, like
-        `self.serialize` and `self.produce`.
-        """
-        data = iter(self.memory_allocation_data)
-        # either break when the app is stopped, or data is exhausted
-        while self.running:
-            try:
-                event = next(data)
-                event_serialized = self.serialize(key=event["host"], value=event)
-                self.produce(key=event_serialized.key, value=event_serialized.value)
-                print("Source produced event successfully!")
-            except StopIteration:
-                print("Source finished producing messages.")
-                return
-
 
 class SolarDataGenerator(Source):
     """
