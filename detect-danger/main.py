@@ -34,13 +34,14 @@ def check_for_danger(row):
 
     return row
 
-sdf = sdf[sdf.contains("data")]
 
 
 # Calculate hopping window of 1s with 200ms steps.
-# sdf = sdf.apply(check_for_danger) \
+sdf = sdf.apply(check_for_danger)
 #         .hopping_window(1000, 200).mean().final() 
-        
+
+sdf = sdf[sdf.contains("data")]
+
 sdf.print()
 
 # Filter only windows where average brake force exceeded 50%.
