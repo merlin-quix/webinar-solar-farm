@@ -39,8 +39,8 @@ def check_for_danger(row):
 
 
 # Calculate hopping window of 1s with 200ms steps.
-sdf = sdf.apply(check_for_danger) \
-        .hopping_window(1000, 200).mean().final() 
+# sdf = sdf.apply(check_for_danger) \
+#         .hopping_window(1000, 200).mean().final() 
         
 sdf.print()
 
