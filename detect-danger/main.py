@@ -23,7 +23,7 @@ def check_for_danger(row):
     print(row)
     panel_temp = float(row["data"]["temperature"])
     
-    if len(row["configuration"]) > 0:
+    if "forecast_temp" in row["configuration"]:
         forecast_temp = float(row["configuration"]["forecast_temp"])
         forecast_cloud = float(row["configuration"]["forecast_cloud"])
     else:
