@@ -47,7 +47,7 @@ sdf = sdf[sdf.contains("data")]
 sdf.apply(lambda row: print(row["danger"]))
 
 # Filter only windows where danger is True
-sdf = sdf[sdf["danger"] > True]
+sdf = sdf[sdf["danger"] is True]
 sdf.print()
 
 # Send the message to the output topic
