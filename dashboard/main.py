@@ -6,7 +6,7 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # API configuration
-API_URL = os.getenv('API_URL', 'http://localhost/api/data')
+API_URL = os.getenv('API_URL', 'https://api-demo-joinsdemo-prod.demo.quix.io/api/data')
 
 @app.route('/')
 def index():
