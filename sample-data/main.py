@@ -152,14 +152,15 @@ def main():
 
     # Setup necessary objects
     app = Application(consumer_group="data_producer", auto_create_topics=True)
-    memory_usage_source = MemoryUsageGenerator(name="memory-usage-producer")
+    # memory_usage_source = MemoryUsageGenerator(name="memory-usage-producer")
     solar = SolarDataGenerator(name="solar-data-generator")
+
     output_topic = app.topic(name=os.environ["output"])
 
     # --- Setup Source ---
     # OPTION 1: no additional processing with a StreamingDataFrame
     # Generally the recommended approach; no additional operations needed!
-    app.add_source(source=memory_usage_source, topic=output_topic)
+    app.add_source(source=solar, topic=output_topic)
 
     # OPTION 2: additional processing with a StreamingDataFrame
     # Useful for consolidating additional data cleanup into 1 Application.
