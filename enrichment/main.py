@@ -24,18 +24,7 @@ def save_config(data):
     print(data)
     last_config = data
 
-
 config_sdf.apply(save_config)
-
-
-# Filter items out without brake value.
-# sdf = sdf[sdf.contains("Brake")]
-
-# Calculate hopping window of 1s with 200ms steps.
-# sdf = sdf.apply(lambda row: float(row["Brake"])) \
-#         .hopping_window(1000, 200).mean().final() 
-
-data_sdf.print()
 
 # Create nice JSON alert message.
 data_sdf = data_sdf.apply(lambda row: {
@@ -45,10 +34,10 @@ data_sdf = data_sdf.apply(lambda row: {
 })
 
 # Print JSON messages in console.
-data_sdf.print()
+# data_sdf.print()
 
 # Send the message to the output topic
-# data_sdf.to_topic(output_topic)
+data_sdf.to_topic(output_topic)
 
 if __name__ == "__main__":
     app.run()
