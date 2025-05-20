@@ -22,15 +22,16 @@ sdf = sdf[sdf.contains("configuration")]
 def check_for_danger(row):
     print(row)
     panel_temp = float(row["data"]["temperature"])
-    
-    if "forecast_temp" in row["configuration"]:
-        forecast_temp = float(row["configuration"]["forecast_temp"])
-        forecast_cloud = float(row["configuration"]["forecast_cloud"])
-    else:
-        return False
 
-    if panel_temp > 25 and forecast_temp > 40 and forecast_cloud < 40:
-        return True
+    return True    
+    # if "forecast_temp" in row["configuration"]:
+    #     forecast_temp = float(row["configuration"]["forecast_temp"])
+    #     forecast_cloud = float(row["configuration"]["forecast_cloud"])
+    # else:
+    #     return False
+
+    # if panel_temp > 25 and forecast_temp > 40 and forecast_cloud < 40:
+    #     return True
 
 
 # Calculate hopping window of 1s with 200ms steps.
