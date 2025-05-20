@@ -41,8 +41,8 @@ sdf = sdf.apply(check_for_danger)
 #         .hopping_window(1000, 200).mean().final() 
 
 sdf = sdf[sdf.contains("data")]
-sdf.hopping_window(1000, 200).mean().final()
-sdf.print()
+
+sdf.apply(lambda row: print(row["danger"]))
 
 # Filter only windows where average brake force exceeded 50%.
 # sdf = sdf[sdf["value"] > 0.5]
