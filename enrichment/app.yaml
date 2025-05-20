@@ -11,6 +11,10 @@ variables:
     description: This is the output topic for hard braking events
     defaultValue: hard-braking
     required: true
+  - name: config_topic
+    inputType: InputTopic
+    multiline: false
+    defaultValue: configuration
 dockerfile: dockerfile
 runEntryPoint: main.py
 defaultFile: quix_function.py
