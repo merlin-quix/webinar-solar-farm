@@ -39,7 +39,7 @@ data_sdf.print()
 
 # Create nice JSON alert message.
 data_sdf = data_sdf.apply(lambda row: {
-    "timestamp": str(datetime.fromtimestamp(row["timestamp"]/1000)),
+    "timestamp": str(datetime.fromtimestamp(row["timestamp"])),
     "data": row,
     "configuration": last_config
 })
