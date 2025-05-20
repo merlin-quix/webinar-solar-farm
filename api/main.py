@@ -3,6 +3,7 @@ import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 import json
+import threading
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -34,7 +35,6 @@ def process_data(data):
     """
     global data_store
     
-    # Parse the data into a dictionary
     try:
         data_dict = json.loads(data)
         
@@ -58,16 +58,19 @@ def get_data():
     """
     return jsonify(data_store)
 
+def run_flask():
+    """
+    Function to run Flask server in a separate thread
+    """
+    app.run(host='0.0.0.0', port=80)
+
 if __name__ == "__main__":
     print("Starting application")
     
-    # Run Flask app on port 80 and all interfaces
-    from threading import Thread
+    # Run Flask in a separate thread
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.daemon = True
+    flask_thread.start()
     
-    # Run Quix Streams application in a separate thread
-    quix_thread = Thread(target=quix_app.run, args=(sdf,))
-    quix_thread.daemon = True
-    quix_thread.start()
-    
-    # Run Flask app
-    app.run(host='0.0.0.0', port=80)
+    # Run Quix Streams application on the main thread
+    quix_app.run(sdf)
