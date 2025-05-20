@@ -17,13 +17,17 @@ sdf = app.dataframe(input_topic)
 
 # Filter items out without data and config values.
 sdf = sdf[sdf.contains("data")]
-sdf = sdf[sdf.contains("configuration") & print(sdf["configuration"])]
+sdf = sdf[sdf.contains("configuration")]
 
 def check_for_danger(row):
     print(row)
     panel_temp = float(row["data"]["temperature"])
-    forecast_temp = float(row["configuration"]["forecast_temp"])
-    forecast_cloud = float(row["configuration"]["forecast_cloud"])
+    
+    if len(row["configuration"]) > 0:
+        forecast_temp = float(row["configuration"]["forecast_temp"])
+        forecast_cloud = float(row["configuration"]["forecast_cloud"])
+    else:
+        return False
 
     if panel_temp > 25 and forecast_temp > 40 and forecast_cloud < 40:
         return True
