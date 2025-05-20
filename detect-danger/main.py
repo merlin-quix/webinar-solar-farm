@@ -20,7 +20,7 @@ sdf = sdf[sdf.contains("data")]
 sdf = sdf[sdf.contains("configuration")]
 
 def check_for_danger(row):
-    print(row)
+    # print(row)
     panel_temp = float(row["data"]["temperature"])
 
     if "forecast_temp" in row["configuration"]:
@@ -45,7 +45,7 @@ sdf = sdf.apply(check_for_danger)
 sdf = sdf[sdf.contains("data")]
 
 sdf.apply(lambda row: print(row["danger"]))
-
+sdf.print()
 # Filter only windows where average brake force exceeded 50%.
 # sdf = sdf[sdf["value"] > 0.5]
 
