@@ -14,9 +14,19 @@ input_data_topic = app.topic(os.environ["data_topic"])
 input_config_topic = app.topic(os.environ["config_topic"])
 output_topic = app.topic(os.environ["output"])
 
-sdf = app.dataframe(input_data_topic)
+data_sdf = app.dataframe(input_data_topic)
+config_sdf = app.dataframe(input_config_topic)
 
 last_config = []
+
+def save_config(data):
+    global last_config
+    print(data)
+    # last_config = data
+
+
+config_sdf.apply(save_config)
+
 
 # Filter items out without brake value.
 # sdf = sdf[sdf.contains("Brake")]
@@ -25,20 +35,20 @@ last_config = []
 # sdf = sdf.apply(lambda row: float(row["Brake"])) \
 #         .hopping_window(1000, 200).mean().final() 
 
-sdf.print()
+data_sdf.print()
 
 # Create nice JSON alert message.
-sdf = sdf.apply(lambda row: {
+data_sdf = data_sdf.apply(lambda row: {
     "Timestamp": str(datetime.fromtimestamp(row["start"]/1000)),
     "data": row,
     "configuration": last_config
 })
 
 # Print JSON messages in console.
-sdf.print()
+data_sdf.print()
 
 # Send the message to the output topic
-# sdf.to_topic(output_topic)
+# data_sdf.to_topic(output_topic)
 
 if __name__ == "__main__":
     app.run()
