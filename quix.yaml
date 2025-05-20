@@ -75,6 +75,19 @@ deployments:
         description: This is the output topic for hard braking events
         required: true
         value: danger_condition
+  - name: API
+    application: api
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 200
+      memory: 500
+      replicas: 1
+    variables:
+      - name: input
+        inputType: InputTopic
+        description: Name of the input topic to listen to.
+        value: danger_condition
 
 # This section describes the Topics of the data pipeline
 topics:
