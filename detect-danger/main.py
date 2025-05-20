@@ -19,6 +19,7 @@ sdf = app.dataframe(input_topic)
 # sdf = sdf[sdf.contains("Brake")]
 
 def check_for_danger(row):
+    print(row)
     panel_temp = float(row["data"]["temperature"])
     forecast_temp = float(row["configuration"]["forecast_temp"])
     forecast_cloud = float(row["configuration"]["forecast_cloud"])
