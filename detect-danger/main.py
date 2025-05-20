@@ -17,7 +17,7 @@ sdf = app.dataframe(input_topic)
 
 # Filter items out without data and config values.
 sdf = sdf[sdf.contains("data")]
-sdf = sdf[sdf.contains("configuration") & len(sdf["configuration"]) > 0]
+sdf = sdf[sdf.contains("configuration") & print(sdf["configuration"])]
 
 def check_for_danger(row):
     print(row)
