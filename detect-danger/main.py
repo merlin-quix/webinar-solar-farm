@@ -27,15 +27,14 @@ def check_for_danger(row):
         forecast_temp = float(row["configuration"]["forecast_temp"])
         forecast_cloud = float(row["configuration"]["forecast_cloud"])
     else:
-        return {
-            "data": None
-        }
+        return {}
 
     if panel_temp > 25 and forecast_temp > 40 and forecast_cloud < 40:
         row["danger"] = True
 
     return row
 
+sdf = sdf[sdf.contains("data")]
 
 
 # Calculate hopping window of 1s with 200ms steps.
