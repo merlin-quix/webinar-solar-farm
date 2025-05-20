@@ -68,7 +68,7 @@ def main():
     # Setup necessary objects
     app = Application(consumer_group="config_producer", auto_create_topics=True)
     config_source = ConfigGenerator(name="config-producer")
-    output_topic = app.topic(name=os.environ["config_output"])
+    output_topic = app.topic(name=os.environ["output"])
 
     # --- Setup Source ---
     # Generally the recommended approach; no additional operations needed!
