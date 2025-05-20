@@ -45,21 +45,10 @@ sdf = sdf.apply(check_for_danger)
 sdf = sdf[sdf.contains("data")]
 
 sdf.apply(lambda row: print(row["danger"]))
+
+# Filter only windows where danger is True
+sdf = sdf[sdf["danger"] > True]
 sdf.print()
-# Filter only windows where average brake force exceeded 50%.
-# sdf = sdf[sdf["value"] > 0.5]
-
-# # Create nice JSON alert message.
-# sdf = sdf.apply(lambda row: {
-#     "Timestamp": str(datetime.fromtimestamp(row["start"]/1000)),
-#     "Alert": {
-#         "Title": "Hard braking detected.",
-#         "Message": "For last 1 second, average braking power was " + str(row["value"])
-#     }
-# })
-
-# # Print JSON messages in console.
-# sdf.print()
 
 # Send the message to the output topic
 # sdf.to_topic(output_topic)
