@@ -1,49 +1,73 @@
-# import the Quix Streams modules for interacting with Kafka.
-# For general info, see https://quix.io/docs/quix-streams/introduction.html
 from quixstreams import Application
-
 import os
+from flask import Flask, jsonify
+from flask_cors import CORS
+import json
 
-# for local dev, load env vars from a .env file
-# from dotenv import load_dotenv
-# load_dotenv()
+# Initialize Flask app
+app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
+# Store the last 500 data points
+data_store = []
 
-def main():
+# For local dev, load env vars from a .env file
+from dotenv import load_dotenv
+load_dotenv()
+
+# Initialize Quix Streams application
+quix_app = Application(consumer_group="data-collector")
+
+# Create the streaming dataframe
+input_topic = quix_app.topic(os.getenv("input", ""))
+
+if input_topic is None:
+    raise ValueError("input topic is required")
+
+# Create the streaming dataframe
+sdf = quix_app.dataframe(input_topic)
+
+def process_data(data):
     """
-    Transformations generally read from, and produce to, Kafka topics.
-
-    They are conducted with Applications and their accompanying StreamingDataFrames
-    which define what transformations to perform on incoming data.
-
-    Be sure to explicitly produce output to any desired topic(s); it does not happen
-    automatically!
-
-    To learn about what operations are possible, the best place to start is:
-    https://quix.io/docs/quix-streams/processing.html
+    Process incoming data and store it in the data store.
+    Only keeps the last 500 data points.
     """
+    global data_store
+    
+    # Parse the data into a dictionary
+    try:
+        data_dict = json.loads(data)
+        
+        # Add to data store
+        data_store.append(data_dict)
+        
+        # Keep only the last 500 data points
+        if len(data_store) > 500:
+            data_store.pop(0)
+            
+    except json.JSONDecodeError:
+        print(f"Error parsing data: {data}")
 
-    # Setup necessary objects
-    app = Application(
-        consumer_group="my_transformation",
-        auto_create_topics=True,
-        auto_offset_reset="earliest"
-    )
-    input_topic = app.topic(name=os.environ["input"])
-    output_topic = app.topic(name=os.environ["output"])
-    sdf = app.dataframe(topic=input_topic)
+# Apply the processing function to incoming data
+sdf = sdf.apply(process_data)
 
-    # Do StreamingDataFrame operations/transformations here
-    sdf = sdf.apply(lambda row: row).filter(lambda row: True)
-    sdf = sdf.print(metadata=True)
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    """
+    API endpoint to get the last 500 data points
+    """
+    return jsonify(data_store)
 
-    # Finish off by writing to the final result to the output topic
-    sdf.to_topic(output_topic)
-
-    # With our pipeline defined, now run the Application
-    app.run()
-
-
-# It is recommended to execute Applications under a conditional main
 if __name__ == "__main__":
-    main()
+    print("Starting application")
+    
+    # Run Flask app on port 80 and all interfaces
+    from threading import Thread
+    
+    # Run Quix Streams application in a separate thread
+    quix_thread = Thread(target=quix_app.run, args=(sdf,))
+    quix_thread.daemon = True
+    quix_thread.start()
+    
+    # Run Flask app
+    app.run(host='0.0.0.0', port=80)
