@@ -16,12 +16,12 @@ output_topic = app.topic(os.environ["output"])
 sdf = app.dataframe(input_topic)
 
 # Filter items out without brake value.
-# sdf = sdf[sdf.contains("Brake")]
+sdf = sdf[sdf.contains("data")]
+sdf = sdf[sdf.contains("configuration")]
 
 def check_for_danger(row):
     print(row)
-    if row.contains("data"):
-        panel_temp = float(row["data"]["temperature"])
+    panel_temp = float(row["data"]["temperature"])
 
     forecast_temp = float(row["configuration"]["forecast_temp"])
     forecast_cloud = float(row["configuration"]["forecast_cloud"])
