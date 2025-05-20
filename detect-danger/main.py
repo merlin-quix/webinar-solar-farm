@@ -6,7 +6,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
-app = Application(consumer_group="danger-v2", 
+app = Application(consumer_group="danger-v3", 
                 auto_offset_reset="earliest", 
                 use_changelog_topics=False)
 
