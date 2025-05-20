@@ -45,12 +45,46 @@
             border-radius: 5px;
             display: none;
         }
+        .config-section {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .config-section h4 {
+            margin-top: 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+        }
         .config-data {
-            margin-bottom: 10px;
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 3px;
+            display: flex;
         }
         .config-data label {
             font-weight: bold;
+            min-width: 200px;
             margin-right: 10px;
+        }
+        .config-value {
+            flex-grow: 1;
+        }
+        .changed {
+            background-color: #fff3cd;
+            border-left: 3px solid #ffc107;
+        }
+        .added {
+            background-color: #d4edda;
+            border-left: 3px solid #28a745;
+        }
+        .removed {
+            background-color: #f8d7da;
+            border-left: 3px solid #dc3545;
+            text-decoration: line-through;
+            opacity: 0.7;
         }
         .danger-point {
             position: absolute;
@@ -80,9 +114,22 @@
     </div>
 
     <div id="configPanel" class="config-panel">
-        <h3>Configuration Data</h3>
-        <div id="configData">
-            <!-- Configuration data will be populated here -->
+        <h3>Configuration Comparison</h3>
+        <div id="configComparison">
+            <div class="config-section">
+                <h4>Current Configuration</h4>
+                <div id="currentConfig"></div>
+            </div>
+            <div class="config-section">
+                <h4>Previous Period Configuration</h4>
+                <div id="previousConfig"></div>
+            </div>
+            <div class="config-section">
+                <h4>Changes</h4>
+                <div id="configChanges">
+                    <p>Click on a data point to see configuration differences.</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -178,24 +225,130 @@
 
 
 
-        // Function to show configuration data
+        // Function to show configuration data with comparison
         function showConfigData(index) {
-            const configData = document.getElementById('configData');
+            const currentConfigDiv = document.getElementById('currentConfig');
+            const previousConfigDiv = document.getElementById('previousConfig');
+            const changesDiv = document.getElementById('configChanges');
             const configPanel = document.getElementById('configPanel');
             
-            // Get the configuration data for the clicked point
-            const config = chartData[index].configuration;
+            // Get current and previous configuration data
+            const currentConfig = chartData[index].configuration;
+            const compareMode = document.getElementById('compareMode').checked;
+            const timeframe = parseInt(document.getElementById('timeframe').value);
+            
+            let previousConfig = null;
+            if (compareMode && index + timeframe < chartData.length) {
+                previousConfig = chartData[index + timeframe].configuration;
+            }
             
             // Clear existing configuration
-            configData.innerHTML = '';
+            currentConfigDiv.innerHTML = '';
+            previousConfigDiv.innerHTML = '';
+            changesDiv.innerHTML = '';
             
-            // Add configuration data
-            Object.entries(config).forEach(([key, value]) => {
-                const div = document.createElement('div');
-                div.className = 'config-data';
-                div.innerHTML = `<label>${key}: </label><span>${value}</span>`;
-                configData.appendChild(div);
-            });
+            // Display current configuration
+            if (currentConfig) {
+                Object.entries(currentConfig).forEach(([key, value]) => {
+                    const div = document.createElement('div');
+                    div.className = 'config-data';
+                    div.id = `current-${key.replace(/\s+/g, '-')}`;
+                    div.innerHTML = `
+                        <label>${key}:</label>
+                        <span class="config-value">${value}</span>
+                    `;
+                    currentConfigDiv.appendChild(div);
+                });
+            }
+            
+            // Display previous configuration and compare
+            if (previousConfig) {
+                const allKeys = new Set([
+                    ...Object.keys(currentConfig || {}),
+                    ...Object.keys(previousConfig || {})
+                ]);
+                
+                let hasChanges = false;
+                const changesList = document.createElement('ul');
+                changesList.style.listStyle = 'none';
+                changesList.style.padding = '0';
+                
+                // Compare configurations
+                allKeys.forEach(key => {
+                    const currentValue = currentConfig?.[key];
+                    const prevValue = previousConfig?.[key];
+                    
+                    // Create previous config element
+                    const prevDiv = document.createElement('div');
+                    prevDiv.className = 'config-data';
+                    prevDiv.id = `previous-${key.replace(/\s+/g, '-')}`;
+                    
+                    // Check for changes
+                    if (currentValue === undefined) {
+                        // Key was removed
+                        prevDiv.innerHTML = `
+                            <label>${key}:</label>
+                            <span class="config-value removed">${prevValue}</span>
+                        `;
+                        changesList.innerHTML += `
+                            <li class="removed">
+                                <strong>${key}:</strong> Removed (was: ${prevValue})
+                            </li>
+                        `;
+                        hasChanges = true;
+                    } else if (prevValue === undefined) {
+                        // Key was added
+                        prevDiv.innerHTML = `
+                            <label>${key}:</label>
+                            <span class="config-value added">${currentValue} (new)</span>
+                        `;
+                        changesList.innerHTML += `
+                            <li class="added">
+                                <strong>${key}:</strong> Added (${currentValue})
+                            </li>
+                        `;
+                        hasChanges = true;
+                    } else if (currentValue !== prevValue) {
+                        // Value changed
+                        prevDiv.innerHTML = `
+                            <label>${key}:</label>
+                            <span class="config-value changed">${prevValue} → ${currentValue}</span>
+                        `;
+                        changesList.innerHTML += `
+                            <li class="changed">
+                                <strong>${key}:</strong> Changed from "${prevValue}" to "${currentValue}"
+                            </li>
+                        `;
+                        hasChanges = true;
+                    } else {
+                        // No change
+                        prevDiv.innerHTML = `
+                            <label>${key}:</label>
+                            <span class="config-value">${prevValue}</span>
+                        `;
+                    }
+                    
+                    previousConfigDiv.appendChild(prevDiv);
+                    
+                    // Highlight corresponding current config if changed
+                    if (currentValue !== prevValue && currentValue !== undefined) {
+                        const currentDiv = document.getElementById(`current-${key.replace(/\s+/g, '-')}`);
+                        if (currentDiv) {
+                            currentDiv.classList.add(prevValue === undefined ? 'added' : 'changed');
+                        }
+                    }
+                });
+                
+                if (hasChanges) {
+                    changesDiv.innerHTML = '<h4>Changes Detected:</h4>';
+                    changesDiv.appendChild(changesList);
+                } else {
+                    changesDiv.innerHTML = '<p>No configuration changes detected between these periods.</p>';
+                }
+            } else {
+                previousConfigDiv.innerHTML = '<p>No previous configuration available for comparison.</p>';
+                changesDiv.innerHTML = '<p>Enable comparison mode and select a timeframe to see configuration differences.</p>';
+            }
             
             // Show the configuration panel
             configPanel.style.display = 'block';
@@ -343,7 +496,7 @@
         updateChartData();
 
         // Update data every 5 seconds
-        setInterval(updateChartData, 1000);
+        // setInterval(updateChartData, 5000);
     </script>
 </body>
 </html>
