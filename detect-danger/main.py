@@ -6,7 +6,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
-app = Application(consumer_group="danger-v3", 
+app = Application(consumer_group="danger-v3.5", 
                 auto_offset_reset="earliest", 
                 use_changelog_topics=False)
 
@@ -51,7 +51,7 @@ sdf = sdf[sdf["danger"] == True]
 sdf.print()
 
 # Send the message to the output topic
-# sdf.to_topic(output_topic)
+sdf.to_topic(output_topic)
 
 if __name__ == "__main__":
     app.run()
