@@ -45,7 +45,7 @@ data_sdf.print()
 # })
 
 # Print JSON messages in console.
-data_sdf.print()
+# data_sdf.print()
 
 # Send the message to the output topic
 # data_sdf.to_topic(output_topic)
