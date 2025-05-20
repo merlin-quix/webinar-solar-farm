@@ -38,11 +38,11 @@ config_sdf.apply(save_config)
 # data_sdf.print()
 
 # Create nice JSON alert message.
-# data_sdf = data_sdf.apply(lambda row: {
-#     "Timestamp": str(datetime.fromtimestamp(row["start"]/1000)),
-#     "data": row,
-#     "configuration": last_config
-# })
+data_sdf = data_sdf.apply(lambda row: {
+    "timestamp": str(datetime.fromtimestamp(row["timestamp"]/1000)),
+    "data": row,
+    "configuration": last_config
+})
 
 # Print JSON messages in console.
 # data_sdf.print()
