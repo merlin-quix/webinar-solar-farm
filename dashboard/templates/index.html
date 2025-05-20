@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Panel Monitoring</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .config-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            display: none;
+        }
+        .config-data {
+            margin-bottom: 10px;
+        }
+        .config-data label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chart-container">
+        <canvas id="solarChart"></canvas>
+    </div>
+    
+    <div id="configPanel" class="config-panel">
+        <h3>Configuration Data</h3>
+        <div id="configData">
+            <!-- Configuration data will be populated here -->
+        </div>
+    </div>
+
+    <script>
+        // Initialize Chart.js
+        const ctx = document.getElementById('solarChart').getContext('2d');
+        const solarChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Temperature (°C)',
+                        data: [],
+                        borderColor: 'rgb(255, 99, 132)',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Power Output (W)',
+                        data: [],
+                        borderColor: 'rgb(54, 162, 235)',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Current (A)',
+                        data: [],
+                        borderColor: 'rgb(255, 205, 86)',
+                        tension: 0.1
+                    },
+                    {
+                        label: 'Voltage (V)',
+                        data: [],
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            title: function(context) {
+                                if (context[0]) {
+                                    const timestamp = context[0].label;
+                                    return `Time: ${timestamp}`;
+                                }
+                                return '';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Values'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Function to update chart data
+        async function updateChartData() {
+            try {
+                const response = await fetch('{{ api_url }}');
+                const data = await response.json();
+                
+                // Extract data points
+                const labels = data.map(item => item.timestamp);
+                const temperature = data.map(item => item.data.temperature);
+                const powerOutput = data.map(item => item.data.power_output);
+                const current = data.map(item => item.data.current);
+                const voltage = data.map(item => item.data.voltage);
+                
+                // Update chart data
+                solarChart.data.labels = labels;
+                solarChart.data.datasets[0].data = temperature;
+                solarChart.data.datasets[1].data = powerOutput;
+                solarChart.data.datasets[2].data = current;
+                solarChart.data.datasets[3].data = voltage;
+                solarChart.update();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        }
+
+        // Function to show configuration data
+        function showConfigData(index) {
+            const configData = document.getElementById('configData');
+            const configPanel = document.getElementById('configPanel');
+            
+            // Get the configuration data for the clicked point
+            const config = data[index].configuration;
+            
+            // Clear existing configuration
+            configData.innerHTML = '';
+            
+            // Add configuration data
+            Object.entries(config).forEach(([key, value]) => {
+                const div = document.createElement('div');
+                div.className = 'config-data';
+                div.innerHTML = `<label>${key}: </label><span>${value}</span>`;
+                configData.appendChild(div);
+            });
+            
+            // Show the configuration panel
+            configPanel.style.display = 'block';
+        }
+
+        // Add click event listener to the chart
+        solarChart.canvas.onclick = function(event) {
+            const points = solarChart.getElementsAtEventForMode(event, 'nearest', { intersect: true });
+            if (points.length > 0) {
+                const index = points[0].index;
+                showConfigData(index);
+            }
+        };
+
+        // Initial data fetch
+        updateChartData();
+
+        // Update data every 5 seconds
+        setInterval(updateChartData, 5000);
+    </script>
+</body>
+</html>
