@@ -8,8 +8,9 @@ variables:
     required: true
   - name: output
     inputType: OutputTopic
+    multiline: false
     description: This is the output topic for hard braking events
-    defaultValue: hard-braking
+    defaultValue: enriched_data
     required: true
   - name: config_topic
     inputType: InputTopic
