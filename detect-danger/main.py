@@ -15,7 +15,7 @@ output_topic = app.topic(os.environ["output"])
 
 sdf = app.dataframe(input_topic)
 
-# Filter items out without brake value.
+# Filter items out without data and config values.
 sdf = sdf[sdf.contains("data")]
 sdf = sdf[sdf.contains("configuration")]
 
