@@ -55,9 +55,6 @@
         <label for="timeframe">Timeframe:</label>
         <select id="timeframe" onchange="updateTimeframe()">
             <option value="500">Last 500 points</option>
-            <option value="300">Last 300 points</option>
-            <option value="200">Last 200 points</option>
-            <option value="100">Last 100 points</option>
             <option value="50">Last 50 points</option>
         </select>
     </div>
@@ -167,51 +164,7 @@
             }
         });
 
-        // Function to handle timeframe changes
-        function updateTimeframe() {
-            const select = document.getElementById('timeframe');
-            selectedTimeframe = parseInt(select.value);
-            updateChartData();
-        }
 
-        // Function to update chart data
-        async function updateChartData() {
-            try {
-                const response = await fetch('{{ api_url }}');
-                chartData = await response.json();
-                
-                // Get the last N points based on selected timeframe
-                const lastNPoints = chartData.slice(-selectedTimeframe);
-                
-                // Extract data points from the last N points
-                const labels = lastNPoints.map(item => item.timestamp);
-                const temperature = lastNPoints.map(item => item.data.temperature);
-                const powerOutput = lastNPoints.map(item => item.data.power_output);
-                const current = lastNPoints.map(item => item.data.current);
-                const voltage = lastNPoints.map(item => item.data.voltage);
-                
-                // Add danger points dataset from the last N points
-                const dangerPoints = lastNPoints.map(item => item.danger ? 1 : null);
-                solarChart.data.datasets[0].data = dangerPoints;
-                solarChart.data.datasets[0].pointBackgroundColor = dangerPoints.map(d => d ? 'red' : 'rgba(0,0,0,0)');
-                solarChart.data.datasets[0].pointBorderColor = dangerPoints.map(d => d ? 'red' : 'rgba(0,0,0,0)');
-                solarChart.data.datasets[0].pointRadius = dangerPoints.map(d => d ? 8 : 0);
-                solarChart.data.datasets[0].pointHoverRadius = dangerPoints.map(d => d ? 12 : 0);
-                
-                // Update other datasets with the last N points
-                solarChart.data.labels = labels;
-                solarChart.data.datasets[1].data = temperature;
-                solarChart.data.datasets[2].data = powerOutput;
-                solarChart.data.datasets[3].data = current;
-                solarChart.data.datasets[4].data = voltage;
-                
-                // Update chart and add danger point icons
-                solarChart.update();
-                addDangerPointIcons();
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
 
         // Function to show configuration data
         function showConfigData(index) {
