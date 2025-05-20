@@ -1,8 +1,9 @@
 name: Enrichment
 language: python
 variables:
-  - name: input
+  - name: data_topic
     inputType: InputTopic
+    multiline: false
     description: This is the input topic for f1 data
     defaultValue: solar-farm
     required: true
