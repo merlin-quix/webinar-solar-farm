@@ -62,3 +62,5 @@ topics:
   - name: solar-farm
   - name: configuration
   - name: enriched_data
+  - name: danger_condition
+    dataTier: Gold
