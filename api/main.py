@@ -36,7 +36,7 @@ def process_data(data):
     global data_store
     
     try:
-        data_dict = json.loads(data)
+        data_dict = data
         
         # Add to data store
         data_store.append(data_dict)
