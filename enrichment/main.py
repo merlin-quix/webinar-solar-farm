@@ -35,7 +35,7 @@ config_sdf.apply(save_config)
 # sdf = sdf.apply(lambda row: float(row["Brake"])) \
 #         .hopping_window(1000, 200).mean().final() 
 
-# data_sdf.print()
+data_sdf.print()
 
 # Create nice JSON alert message.
 data_sdf = data_sdf.apply(lambda row: {
