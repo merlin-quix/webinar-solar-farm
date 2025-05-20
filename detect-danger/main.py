@@ -23,15 +23,19 @@ def check_for_danger(row):
     print(row)
     panel_temp = float(row["data"]["temperature"])
 
-    return True    
-    # if "forecast_temp" in row["configuration"]:
-    #     forecast_temp = float(row["configuration"]["forecast_temp"])
-    #     forecast_cloud = float(row["configuration"]["forecast_cloud"])
-    # else:
-    #     return False
+    if "forecast_temp" in row["configuration"]:
+        forecast_temp = float(row["configuration"]["forecast_temp"])
+        forecast_cloud = float(row["configuration"]["forecast_cloud"])
+    else:
+        return {
+            "data": None
+        }
 
-    # if panel_temp > 25 and forecast_temp > 40 and forecast_cloud < 40:
-    #     return True
+    if panel_temp > 25 and forecast_temp > 40 and forecast_cloud < 40:
+        row["danger"] = True
+
+    return row
+
 
 
 # Calculate hopping window of 1s with 200ms steps.
