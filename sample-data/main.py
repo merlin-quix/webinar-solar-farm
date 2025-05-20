@@ -66,6 +66,9 @@ class SolarDataGenerator(Source):
     """
     
     def __init__(self, name):
+
+        Source.__init__(self, name)
+
         # Initialize base values
         self.base_power = 250.0  # Base power output in W
         self.base_temp = 25.0    # Base temperature in C
