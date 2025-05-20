@@ -18,7 +18,7 @@ class SolarDataGenerator(Source):
     Simulates power output, temperature, irradiance, voltage, current, and inverter status.
     """
     
-    def __init__(self):
+    def __init__(self, name="solar-data-producer"):
         # Initialize base values
         self.base_power = 250.0  # Base power output in W
         self.base_temp = 25.0    # Base temperature in C
@@ -104,7 +104,7 @@ def main():
 
     # Setup necessary objects
     app = Application(consumer_group="data_producer", auto_create_topics=True)
-    solar_data_source = SolarDataGenerator(name="solar-data-producer")
+    solar_data_source = SolarDataGenerator()
     output_topic = app.topic(name=os.environ["output"])
 
     # --- Setup Source ---
