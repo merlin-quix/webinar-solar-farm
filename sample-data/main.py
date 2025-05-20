@@ -65,7 +65,7 @@ class SolarDataGenerator(Source):
     Simulates power output, temperature, irradiance, voltage, current, and inverter status.
     """
     
-    def __init__(self):
+    def __init__(self, name):
         # Initialize base values
         self.base_power = 250.0  # Base power output in W
         self.base_temp = 25.0    # Base temperature in C
