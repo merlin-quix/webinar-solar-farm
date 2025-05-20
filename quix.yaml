@@ -6,28 +6,6 @@ metadata:
 
 # This section describes the Deployments of the data pipeline
 deployments:
-  - name: Enrichment
-    application: enrichment
-    version: latest
-    deploymentType: Service
-    resources:
-      cpu: 200
-      memory: 500
-      replicas: 1
-    variables:
-      - name: data_topic
-        inputType: InputTopic
-        description: This is the input topic for f1 data
-        required: true
-        value: solar-farm
-      - name: output
-        inputType: OutputTopic
-        description: This is the output topic for hard braking events
-        required: true
-        value: enriched_data
-      - name: config_topic
-        inputType: InputTopic
-        value: configuration
   - name: Dashboard
     application: dashboard
     version: latest
@@ -102,6 +80,28 @@ deployments:
         inputType: InputTopic
         description: Name of the input topic to listen to.
         value: danger_condition
+  - name: Solar Config Enrichment
+    application: enrichment
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 200
+      memory: 500
+      replicas: 1
+    variables:
+      - name: data_topic
+        inputType: InputTopic
+        description: This is the input topic for f1 data
+        required: true
+        value: solar-farm
+      - name: output
+        inputType: OutputTopic
+        description: This is the output topic for hard braking events
+        required: true
+        value: enriched_data
+      - name: config_topic
+        inputType: InputTopic
+        value: configuration
 
 # This section describes the Topics of the data pipeline
 topics:
