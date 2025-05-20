@@ -153,6 +153,7 @@ def main():
     # Setup necessary objects
     app = Application(consumer_group="data_producer", auto_create_topics=True)
     memory_usage_source = MemoryUsageGenerator(name="memory-usage-producer")
+    solar = SolarDataGenerator(name="solar-data-generator")
     output_topic = app.topic(name=os.environ["output"])
 
     # --- Setup Source ---
