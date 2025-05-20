@@ -22,6 +22,16 @@
             border-radius: 4px;
             border: 1px solid #ddd;
             font-size: 14px;
+            margin-right: 10px;
+        }
+        .compare-option {
+            margin-left: 20px;
+            display: inline-block;
+        }
+        .compare-option label {
+            margin-left: 5px;
+            font-weight: normal;
+            cursor: pointer;
         }
         .chart-container {
             width: 100%;
@@ -53,10 +63,17 @@
 <body>
     <div class="timeframe-selector">
         <label for="timeframe">Timeframe:</label>
-        <select id="timeframe" onchange="updateTimeframe()">
+        <select id="timeframe" onchange="updateChartData()">
             <option value="500">Last 500 points</option>
+            <option value="300">Last 300 points</option>
+            <option value="200">Last 200 points</option>
+            <option value="100">Last 100 points</option>
             <option value="50">Last 50 points</option>
         </select>
+        <span class="compare-option">
+            <input type="checkbox" id="compareMode" onchange="updateChartData()">
+            <label for="compareMode">Compare with previous period</label>
+        </span>
     </div>
     <div class="chart-container">
         <canvas id="solarChart"></canvas>
@@ -74,12 +91,7 @@
         let chartData = [];
         let selectedTimeframe = 500; // Default to 500 points
 
-        // Function to update timeframe
-        function updateTimeframe() {
-            const select = document.getElementById('timeframe');
-            selectedTimeframe = parseInt(select.value);
-            updateChartData();
-        }
+
 
         // Initialize Chart.js
         const ctx = document.getElementById('solarChart').getContext('2d');
@@ -224,43 +236,98 @@
             });
         }
 
-        // Update chart data
+        // Update chart with data for both current and previous periods
         async function updateChartData() {
             try {
                 const response = await fetch('{{ api_url }}');
                 chartData = await response.json();
+                const compareMode = document.getElementById('compareMode').checked;
+                const timeframe = parseInt(document.getElementById('timeframe').value);
                 
-                // Get the last N points based on selected timeframe
-                const lastNPoints = chartData.slice(-selectedTimeframe);
+                // Get the current period data
+                const currentData = chartData.slice(-timeframe);
                 
-                // Extract data points from the last N points
-                const labels = lastNPoints.map(item => item.timestamp);
-                const temperature = lastNPoints.map(item => item.data.temperature);
-                const powerOutput = lastNPoints.map(item => item.data.power_output);
-                const current = lastNPoints.map(item => item.data.current);
-                const voltage = lastNPoints.map(item => item.data.voltage);
+                let previousData = [];
+                if (compareMode) {
+                    // Get the previous period data (same length as current period)
+                    previousData = chartData.slice(-timeframe * 2, -timeframe);
+                }
+
+                // Update chart with both datasets
+                updateChartWithData(currentData, previousData, compareMode);
                 
-                // Add danger points dataset from the last N points
-                const dangerPoints = lastNPoints.map(item => item.danger ? 1 : null);
-                solarChart.data.datasets[0].data = dangerPoints;
-                solarChart.data.datasets[0].pointBackgroundColor = dangerPoints.map(d => d ? 'red' : 'rgba(0,0,0,0)');
-                solarChart.data.datasets[0].pointBorderColor = dangerPoints.map(d => d ? 'red' : 'rgba(0,0,0,0)');
-                solarChart.data.datasets[0].pointRadius = dangerPoints.map(d => d ? 8 : 0);
-                solarChart.data.datasets[0].pointHoverRadius = dangerPoints.map(d => d ? 12 : 0);
-                
-                // Update other datasets with the last N points
-                solarChart.data.labels = labels;
-                solarChart.data.datasets[1].data = temperature;
-                solarChart.data.datasets[2].data = powerOutput;
-                solarChart.data.datasets[3].data = current;
-                solarChart.data.datasets[4].data = voltage;
-                
-                // Update chart and add danger point icons
-                solarChart.update();
-                addDangerPointIcons();
             } catch (error) {
                 console.error('Error fetching data:', error);
             }
+        }
+
+        // Update chart with current and previous period data
+        function updateChartWithData(currentData, previousData, compareMode) {
+            // Update labels (use timestamps from current data)
+            const labels = currentData.map(item => item.timestamp);
+            
+            // Update danger points (only for current period)
+            const dangerPoints = currentData.map(item => item.danger ? 1 : null);
+            solarChart.data.datasets[0].data = dangerPoints;
+            solarChart.data.datasets[0].pointBackgroundColor = dangerPoints.map(d => d ? 'red' : 'rgba(0,0,0,0)');
+            solarChart.data.datasets[0].pointBorderColor = dangerPoints.map(d => d ? 'red' : 'rgba(0,0,0,0)');
+            solarChart.data.datasets[0].pointRadius = dangerPoints.map(d => d ? 8 : 0);
+            solarChart.data.datasets[0].pointHoverRadius = dangerPoints.map(d => d ? 12 : 0);
+            
+            // Update current period data
+            updateMetricDataset(1, 'Temperature (°C)', currentData, 'rgb(255, 99, 132)', 'data.temperature');
+            updateMetricDataset(2, 'Power Output (W)', currentData, 'rgb(54, 162, 235)', 'data.power_output');
+            updateMetricDataset(3, 'Current (A)', currentData, 'rgb(255, 205, 86)', 'data.current');
+            updateMetricDataset(4, 'Voltage (V)', currentData, 'rgb(75, 192, 192)', 'data.voltage');
+            
+            // Update or add previous period data if in compare mode
+            if (compareMode) {
+                updateMetricDataset(5, 'Previous Temp (°C)', previousData, 'rgba(255, 99, 132, 0.5)', 'data.temperature');
+                updateMetricDataset(6, 'Previous Power (W)', previousData, 'rgba(54, 162, 235, 0.5)', 'data.power_output');
+                updateMetricDataset(7, 'Previous Current (A)', previousData, 'rgba(255, 205, 86, 0.5)', 'data.current');
+                updateMetricDataset(8, 'Previous Voltage (V)', previousData, 'rgba(75, 192, 192, 0.5)', 'data.voltage');
+                
+                // Ensure we have the right number of datasets
+                while (solarChart.data.datasets.length > 9) {
+                    solarChart.data.datasets.pop();
+                }
+            } else {
+                // Remove previous period data if not in compare mode
+                solarChart.data.datasets = solarChart.data.datasets.slice(0, 5);
+            }
+            
+            // Update labels and redraw chart
+            solarChart.data.labels = labels;
+            solarChart.update();
+            addDangerPointIcons();
+        }
+        
+        // Helper function to update a specific metric dataset
+        function updateMetricDataset(datasetIndex, label, data, color, dataPath) {
+            // Add new dataset if it doesn't exist
+            if (!solarChart.data.datasets[datasetIndex]) {
+                solarChart.data.datasets[datasetIndex] = {
+                    label: label,
+                    data: [],
+                    borderColor: color,
+                    borderDash: datasetIndex > 4 ? [5, 5] : [], // Dashed line for previous period
+                    tension: 0.1,
+                    borderWidth: datasetIndex > 4 ? 1.5 : 2,
+                    pointRadius: 0, // No points for cleaner look
+                    fill: false
+                };
+            }
+            
+            // Update dataset properties
+            const dataset = solarChart.data.datasets[datasetIndex];
+            dataset.label = label;
+            dataset.borderColor = color;
+            
+            // Get the data using the path (e.g., 'data.temperature')
+            dataset.data = data.map(item => {
+                const path = dataPath.split('.');
+                return path.reduce((obj, key) => obj && obj[key], item);
+            });
         }
 
         // Add click event listener to the chart
