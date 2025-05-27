@@ -17,14 +17,6 @@ output_topic = app.topic(os.environ["output"])
 data_sdf = app.dataframe(input_data_topic)
 config_sdf = app.dataframe(input_config_topic)
 
-last_config = {}
-
-def save_config(data):
-    global last_config
-    print(data)
-    last_config = data
-
-config_sdf.apply(save_config)
 
 # Create nice JSON alert message.
 data_sdf = data_sdf.apply(lambda row: {
