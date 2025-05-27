@@ -20,7 +20,7 @@ config_sdf = app.dataframe(input_config_topic)
 
 def on_merge(left: dict, right: dict):
     """
-    Form a new dictionary from  the join result
+    Merge left and right sides of the join into a new dictionary
     """
     timestamp = left.pop("timestamp")
     date_str = str(datetime.fromtimestamp(timestamp/1000/1000/1000))
@@ -29,18 +29,8 @@ def on_merge(left: dict, right: dict):
 # Join the latest effective config with the data
 data_sdf = data_sdf.join_asof(config_sdf, on_merge=on_merge)
 
-# Create nice JSON alert message.
-# data_sdf = data_sdf.apply(lambda row: {
-#     "timestamp": str(datetime.fromtimestamp(row["timestamp"]/1000/1000/1000)),
-#     "data": row,
-#     "configuration": last_config
-# })
-
-# Print JSON messages in console.
-data_sdf.print()
-
 # Send the message to the output topic
-# data_sdf.to_topic(output_topic)
+data_sdf.to_topic(output_topic)
 
 if __name__ == "__main__":
     app.run()
