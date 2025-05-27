@@ -18,8 +18,9 @@ data_sdf = app.dataframe(input_data_topic)
 config_sdf = app.dataframe(input_config_topic)
 
 def on_merge(left: dict, right: dict):
-    left['config'] = right
-    return left
+    timestamp = left.pop("timestamp")
+    return {"timestamp": timestamp, "data": left, "config": right}
+
 
 
 data_sdf = data_sdf.join_asof(config_sdf, on_merge=on_merge)
