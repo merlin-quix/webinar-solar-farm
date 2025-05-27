@@ -17,11 +17,12 @@ output_topic = app.topic(os.environ["output"])
 data_sdf = app.dataframe(input_data_topic)
 config_sdf = app.dataframe(input_config_topic)
 
+
 def on_merge(left: dict, right: dict):
     timestamp = left.pop("timestamp")
     return {"timestamp": timestamp, "data": left, "config": right}
 
-
+# Join the latest effective config with the data
 data_sdf = data_sdf.join_asof(config_sdf, on_merge=on_merge)
 
 # Create nice JSON alert message.
