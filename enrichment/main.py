@@ -17,6 +17,11 @@ output_topic = app.topic(os.environ["output"])
 data_sdf = app.dataframe(input_data_topic)
 config_sdf = app.dataframe(input_config_topic)
 
+def on_merge(left: dict, right: dict):
+    left['config'] = right
+    return left
+
+
 data_sdf = data_sdf.join_asof(config_sdf)
 
 # Create nice JSON alert message.
