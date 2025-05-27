@@ -6,9 +6,11 @@ from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
-app = Application(consumer_group="enrichment-v1", 
-                    auto_offset_reset="earliest", 
-                    use_changelog_topics=False)
+app = Application(
+    consumer_group="enrichment-v1",
+    auto_offset_reset="earliest",
+    use_changelog_topics=False,
+    )
 
 input_data_topic = app.topic(os.environ["data_topic"])
 input_config_topic = app.topic(os.environ["config_topic"])
