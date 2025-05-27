@@ -22,7 +22,6 @@ def on_merge(left: dict, right: dict):
     return {"timestamp": timestamp, "data": left, "config": right}
 
 
-
 data_sdf = data_sdf.join_asof(config_sdf, on_merge=on_merge)
 
 # Create nice JSON alert message.
