@@ -22,7 +22,7 @@ def on_merge(left: dict, right: dict):
     return left
 
 
-data_sdf = data_sdf.join_asof(config_sdf)
+data_sdf = data_sdf.join_asof(config_sdf, on_merge=on_merge)
 
 # Create nice JSON alert message.
 # data_sdf = data_sdf.apply(lambda row: {
