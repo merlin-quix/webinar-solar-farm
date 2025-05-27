@@ -51,7 +51,7 @@ class ConfigGenerator(Source):
                 self.current_time += self.time_step
                 
                 # Serialize and produce the event
-                event_serialized = self.serialize(key="config", value=config)
+                event_serialized = self.serialize(key="P001", value=config)
                 self.produce(key=event_serialized.key, value=event_serialized.value)
                 print(f"Config generated at time {config['timestamp']}")
                 
