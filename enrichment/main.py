@@ -26,6 +26,7 @@ def on_merge(left: dict, right: dict):
     """
     timestamp = left.pop("timestamp")
     date_str = str(datetime.fromtimestamp(timestamp/1000/1000/1000))
+    right['timestamp'] = str(datetime.fromtimestamp(right['timestamp']/1000/1000/1000))
     return {"timestamp": date_str, "data": left, "config": right}
 
 # Join the latest effective config with the data
