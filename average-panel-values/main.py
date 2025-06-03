@@ -138,7 +138,7 @@ window_size = timedelta(minutes=1)
 # Apply the window and aggregation
 sdf = (
     # sdf.group_by(lambda x: x.get('location_id') if x else None)
-    .tumbling_window(window_size)
+    sdf.tumbling_window(window_size)
     .agg(value=PanelAggregator())
     .current()
 )
