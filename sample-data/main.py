@@ -11,6 +11,7 @@ from dataclasses import dataclass, field
 from typing import List, Dict, Tuple
 import uuid
 
+location = os.environ["location"] # e.g. LONDON
 
 @dataclass
 class Location:
@@ -56,8 +57,8 @@ class SolarDataGenerator(Source):
     def __init__(self, name: str, num_panels: int = 100):
         Source.__init__(self, name)
         
-        # Define some example locations
-        self.locations = [
+        # Define all possible locations
+        all_locations = [
             Location("LONDON", "London, UK", 51.5074, -0.1278, 1, 850.0),
             Location("MADRID", "Madrid, Spain", 40.4168, -3.7038, 2, 950.0),
             Location("BERLIN", "Berlin, Germany", 52.5200, 13.4050, 2, 900.0),
@@ -70,28 +71,24 @@ class SolarDataGenerator(Source):
             Location("ATHENS", "Athens, Greece", 37.9838, 23.7275, 3, 980.0)
         ]
         
-        # Initialize panels with unique IDs and assign to locations
+        # Find the specified location (case-insensitive)
+        location_upper = location.upper()
+        selected_location = next((loc for loc in all_locations if loc.location_id.upper() == location_upper), None)
+        
+        if not selected_location:
+            valid_locations = ", ".join([f'"{loc.location_id}"' for loc in all_locations])
+            raise ValueError(f"Invalid location: '{location}'. Valid locations are: {valid_locations}")
+        
+        print(f"Generating data for location: {selected_location.name} ({selected_location.location_id})")
+        
+        # Initialize panels for the selected location only
         self.panels = []
-        panels_per_location = max(1, num_panels // len(self.locations))
-        
-        for loc in self.locations:
-            for i in range(1, panels_per_location + 1):
-                panel_id = f"{loc.location_id}-P{str(i).zfill(3)}"
-                self.panels.append(SolarPanel(
-                    panel_id=panel_id,
-                    location=loc,
-                    base_irradiance=loc.peak_irradiance * random.uniform(0.95, 1.05)  # Slight variation per panel
-                ))
-        
-        # If we couldn't distribute panels evenly, add remaining to first location
-        remaining = num_panels - len(self.panels)
-        for i in range(remaining):
-            loc = self.locations[0]
-            panel_id = f"{loc.location_id}-P{str(panels_per_location + i + 1).zfill(3)}"
+        for i in range(1, num_panels + 1):
+            panel_id = f"{selected_location.location_id}-P{str(i).zfill(4)}"  # 4-digit panel number
             self.panels.append(SolarPanel(
                 panel_id=panel_id,
-                location=loc,
-                base_irradiance=loc.peak_irradiance * random.uniform(0.95, 1.05)
+                location=selected_location,
+                base_irradiance=selected_location.peak_irradiance * random.uniform(0.95, 1.05)  # Slight variation per panel
             ))
         
         # Base values that are common to all panels

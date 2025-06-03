@@ -7,6 +7,12 @@ variables:
     description: Name of the output topic to write into
     defaultValue: solar-farm
     required: true
+  - name: location
+    inputType: FreeText
+    multiline: false
+    description: The location of the solar farm
+    defaultValue: LONDON
+    required: true
 dockerfile: dockerfile
 runEntryPoint: main.py
 defaultFile: main.py
