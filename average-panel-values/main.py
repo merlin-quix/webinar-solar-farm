@@ -127,7 +127,10 @@ sdf = app.dataframe(input_topic)
 sdf = sdf.apply(process_message)
 
 # Group by location
-sdf = sdf.group_by(lambda x: x.get('location_id') if x else None)
+sdf = sdf.group_by(
+    key=lambda x: x.get('location_id') if x else None,
+    name="group_by_location"
+)
 
 # Define a 1-minute window
 window_size = timedelta(minutes=1)
