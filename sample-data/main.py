@@ -97,8 +97,8 @@ class SolarDataGenerator(Source):
         # Time step in nanoseconds (1 second)
         self.time_step = 1000000000
         
-        # Initialize time
-        self.current_time = 1577836800000000000  # Start time
+        # Initialize time to current time in nanoseconds since epoch
+        self.current_time = int(time.time() * 1_000_000_000)  # Current time in nanoseconds
         
         # Track panel ages in seconds
         self.panel_ages = {panel.panel_id: 0 for panel in self.panels}
