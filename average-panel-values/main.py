@@ -83,7 +83,7 @@ sdf = sdf.apply(
     func=calculate_average,
     stateful=False,
     expand=False,
-    metadata=True
+    metadata=False
 ).update(
     lambda value: logger.info(f"Processed window: {value}") or value
 )
