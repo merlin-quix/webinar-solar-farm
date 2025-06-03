@@ -6,6 +6,7 @@ from quixstreams.sources import Source
 import time
 import os
 import random
+import math
 from dataclasses import dataclass, field
 from typing import List, Dict, Tuple
 import uuid
