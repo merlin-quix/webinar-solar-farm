@@ -3,7 +3,9 @@ language: python
 variables:
   - name: input
     inputType: InputTopic
+    multiline: false
     description: Input topic to read solar panel data from
+    defaultValue: enriched_data
     required: true
   - name: output
     inputType: OutputTopic
