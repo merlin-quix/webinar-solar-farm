@@ -6,24 +6,95 @@ from quixstreams.sources import Source
 import time
 import os
 import random
+from dataclasses import dataclass, field
+from typing import List, Dict, Tuple
+import uuid
+
+
+@dataclass
+class Location:
+    """Represents a physical location for solar panels."""
+    location_id: str
+    name: str
+    latitude: float
+    longitude: float
+    timezone: int  # UTC offset in hours
+    peak_irradiance: float  # W/m² at peak sun
+    
+    def __post_init__(self):
+        # Ensure location_id is uppercase
+        self.location_id = self.location_id.upper()
+
+
+@dataclass
+class SolarPanel:
+    """Represents a single solar panel with unique characteristics."""
+    panel_id: str
+    location: Location
+    base_power: float = 250.0  # Base power output in W
+    base_irradiance: float = 800.0  # Base irradiance in W/m²
+    base_voltage: float = 24.0  # Base voltage in V
+    efficiency: float = 1.0  # Panel efficiency (0.8-1.2)
+    degradation_rate: float = 0.0  # Annual degradation rate
+    
+    def __post_init__(self):
+        # Add some variation to panel characteristics
+        self.efficiency = max(0.8, min(1.2, random.normalvariate(1.0, 0.05)))
+        self.degradation_rate = random.uniform(0.005, 0.02)  # 0.5% to 2% annual degradation
+        self.base_power *= self.efficiency
+        self.base_irradiance *= self.efficiency
 
 
 class SolarDataGenerator(Source):
     """
     A Quix Streams Source that generates realistic solar panel data over time.
-    Simulates power output, temperature, irradiance, voltage, current, and inverter status.
+    Simulates power output, temperature, irradiance, voltage, current, and inverter status
+    for multiple solar panels.
     """
     
-    def __init__(self, name):
-
+    def __init__(self, name: str, num_panels: int = 100):
         Source.__init__(self, name)
-
-        # Initialize base values
-        self.base_power = 250.0  # Base power output in W
-        self.base_temp = 25.0    # Base temperature in C
-        self.base_irradiance = 800.0  # Base irradiance in W/m²
-        self.base_voltage = 24.0  # Base voltage in V
-        self.base_current = 10.0  # Base current in A
+        
+        # Define some example locations
+        self.locations = [
+            Location("LONDON", "London, UK", 51.5074, -0.1278, 1, 850.0),
+            Location("MADRID", "Madrid, Spain", 40.4168, -3.7038, 2, 950.0),
+            Location("BERLIN", "Berlin, Germany", 52.5200, 13.4050, 2, 900.0),
+            Location("ROME", "Rome, Italy", 41.9028, 12.4964, 2, 920.0),
+            Location("PARIS", "Paris, France", 48.8566, 2.3522, 2, 870.0),
+            Location("AMSTERDAM", "Amsterdam, Netherlands", 52.3676, 4.9041, 2, 830.0),
+            Location("VIENNA", "Vienna, Austria", 48.2082, 16.3738, 2, 880.0),
+            Location("DUBLIN", "Dublin, Ireland", 53.3498, -6.2603, 1, 800.0),
+            Location("PRAGUE", "Prague, Czech Republic", 50.0755, 14.4378, 2, 860.0),
+            Location("ATHENS", "Athens, Greece", 37.9838, 23.7275, 3, 980.0)
+        ]
+        
+        # Initialize panels with unique IDs and assign to locations
+        self.panels = []
+        panels_per_location = max(1, num_panels // len(self.locations))
+        
+        for loc in self.locations:
+            for i in range(1, panels_per_location + 1):
+                panel_id = f"{loc.location_id}-P{str(i).zfill(3)}"
+                self.panels.append(SolarPanel(
+                    panel_id=panel_id,
+                    location=loc,
+                    base_irradiance=loc.peak_irradiance * random.uniform(0.95, 1.05)  # Slight variation per panel
+                ))
+        
+        # If we couldn't distribute panels evenly, add remaining to first location
+        remaining = num_panels - len(self.panels)
+        for i in range(remaining):
+            loc = self.locations[0]
+            panel_id = f"{loc.location_id}-P{str(panels_per_location + i + 1).zfill(3)}"
+            self.panels.append(SolarPanel(
+                panel_id=panel_id,
+                location=loc,
+                base_irradiance=loc.peak_irradiance * random.uniform(0.95, 1.05)
+            ))
+        
+        # Base values that are common to all panels
+        self.base_temp = 25.0  # Base temperature in C
         
         # Time step in nanoseconds (1 second)
         self.time_step = 1000000000
@@ -31,37 +102,88 @@ class SolarDataGenerator(Source):
         # Initialize time
         self.current_time = 1577836800000000000  # Start time
         
-    def generate_next_data_point(self):
-        """Generate a realistic data point with all sensor readings"""
-        # Simulate daily cycle (lower power at night, higher during day)
-        hour = (self.current_time // 1000000000) % 86400 // 3600
+        # Track panel ages in seconds
+        self.panel_ages = {panel.panel_id: 0 for panel in self.panels}
         
-        # Power output varies with time of day and temperature
-        power_output = self.base_power * (
-            0.1 + 0.9 * max(0, min(1, (hour - 6) / 6))  # Daytime curve
-        ) * (1 - 0.005 * (self.base_temp + 10))  # Temperature effect
+    def _get_solar_intensity(self, hour: float) -> float:
+        """Calculate solar intensity using a smooth bell curve.
         
-        # Temperature increases during day
-        temperature = self.base_temp + 10 * max(0, min(1, (hour - 6) / 6))
+        Args:
+            hour: Current hour (0-24)
+            
+        Returns:
+            Normalized solar intensity (0.0 to 1.0)
+        """
+        # Solar noon is at 12:00, with full sun between 8am and 4pm
+        solar_noon = 12.0
         
-        # Irradiance follows similar pattern to power
-        irradiance = self.base_irradiance * max(0, min(1, (hour - 6) / 6))
+        # Calculate time from solar noon in hours
+        delta = abs(hour - solar_noon)
         
-        # Voltage slightly varies with temperature
-        voltage = self.base_voltage * (1 - 0.002 * (temperature - 25))
+        # Use a Gaussian function for the bell curve
+        # Standard deviation controls the width of the curve
+        sigma = 4.0  # Higher values make the curve wider
+        
+        # Calculate intensity using Gaussian function
+        intensity = math.exp(-0.5 * (delta / sigma) ** 2)
+        
+        # Ensure intensity is 0 at night
+        if hour < 5 or hour > 19:  # Night time
+            return 0.0
+            
+        # Apply a small ramp up/down at sunrise/sunset
+        if 5 <= hour < 6:  # Sunrise ramp up
+            return intensity * ((hour - 5) / 1.0)
+        elif 18 <= hour <= 19:  # Sunset ramp down
+            return intensity * ((19 - hour) / 1.0)
+            
+        return intensity
+
+    def generate_panel_data(self, panel: SolarPanel, current_time: int) -> dict:
+        """Generate data for a single solar panel."""
+        # Get current hour with fractional part for smooth transitions
+        seconds_in_day = (current_time // 1000000000) % 86400
+        hour = seconds_in_day / 3600.0  # Convert to fractional hours
+        
+        # Calculate solar intensity (0.0 to 1.0)
+        solar_intensity = self._get_solar_intensity(hour)
+        
+        # Temperature varies with solar intensity and time of day
+        temperature = self.base_temp + \
+                     (solar_intensity * 15) + \  # Daytime heating
+                     (0.5 * (hour - 12) / 6)     # Extra warming in afternoon
+        
+        # Calculate degradation factor (very small per-second degradation)
+        degradation = 1.0 - (self.panel_ages[panel.panel_id] * panel.degradation_rate / (365 * 24 * 3600))
+        
+        # Power output follows solar intensity with temperature derating and degradation
+        power_output = panel.base_power * solar_intensity * degradation * \
+                      (1 - 0.004 * (temperature - 25))  # Temperature effect
+        
+        # Irradiance is directly related to solar intensity with panel efficiency
+        irradiance = panel.base_irradiance * solar_intensity * panel.efficiency
+        
+        # Voltage decreases slightly with temperature and has panel-specific variations
+        voltage = panel.base_voltage * (1 - 0.002 * (temperature - 25)) * \
+                 random.uniform(0.98, 1.02)  # Panel-specific variation
         
         # Current is derived from power and voltage
-        current = power_output / voltage
+        current = (power_output / voltage) if voltage > 0 else 0
         
-        # Add some random noise to make it more realistic
-        power_output += random.uniform(-5, 5)
-        temperature += random.uniform(-1, 1)
-        irradiance += random.uniform(-10, 10)
-        voltage += random.uniform(-0.5, 0.5)
-        current += random.uniform(-0.1, 0.1)
+        # Add realistic random variations
+        power_output = max(0, power_output * random.uniform(0.98, 1.02))  # ±2% variation
+        temperature += random.uniform(-0.5, 0.5)  # Small temperature fluctuations
+        irradiance = max(0, irradiance * random.uniform(0.97, 1.03))  # ±3% variation
+        voltage = max(0, voltage * random.uniform(0.998, 1.002))  # Very small voltage variation
+        current = max(0, current * random.uniform(0.99, 1.01))  # Small current variation
         
         return {
-            "panel_id": "P001",
+            "panel_id": panel.panel_id,
+            "location_id": panel.location.location_id,
+            "location_name": panel.location.name,
+            "latitude": panel.location.latitude,
+            "longitude": panel.location.longitude,
+            "timezone": panel.location.timezone,
             "power_output": round(power_output, 1),
             "unit_power": "W",
             "temperature": round(temperature, 1),
@@ -77,22 +199,34 @@ class SolarDataGenerator(Source):
         }
     
     def run(self):
-        """Generate data points every second"""
+        """Generate data points for all panels every second"""
         while self.running:
             try:
-                # Generate next data point
-                event = self.generate_next_data_point()
+                # Update panel ages
+                for panel_id in self.panel_ages:
+                    self.panel_ages[panel_id] += 1  # Increment age by 1 second
+                
+                # Generate data for all panels
+                for panel in self.panels:
+                    # Generate data for this panel
+                    event = self.generate_panel_data(panel, self.current_time)
+                    
+                    # Add timestamp
+                    event["timestamp"] = self.current_time
+                    
+                    # Serialize and produce the event
+                    event_serialized = self.serialize(key=event["panel_id"], value=event)
+                    self.produce(key=event_serialized.key, value=event_serialized.value)
+                
+                if self.current_time % 10 == 0:  # Print every 10 seconds to reduce noise
+                    print(f"Produced data for {len(self.panels)} panels at time {self.current_time}")
                 
                 # Increment time
                 self.current_time += self.time_step
                 
-                # Serialize and produce the event
-                event_serialized = self.serialize(key=event["panel_id"], value=event)
-                self.produce(key=event_serialized.key, value=event_serialized.value)
-                print(f"Source produced event at time {event['timestamp']}")
-                
-                # Sleep for 1 second between data points
+                # Sleep for 1 second between batches
                 time.sleep(1)
+                
             except Exception as e:
                 print(f"Error generating data: {str(e)}")
                 break
