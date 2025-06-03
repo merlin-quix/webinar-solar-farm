@@ -153,6 +153,25 @@ deployments:
         description: The location of the solar farm
         required: true
         value: PARIS
+  - name: average-panel-values
+    application: average-panel-values
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 200
+      memory: 500
+      replicas: 1
+    variables:
+      - name: input
+        inputType: InputTopic
+        description: This is the input topic for solar panel data
+        required: true
+        value: enriched_data
+      - name: output
+        inputType: OutputTopic
+        description: This is the output topic for average panel values
+        required: true
+        value: downsampled_data
 
 # This section describes the Topics of the data pipeline
 topics:
@@ -160,4 +179,6 @@ topics:
   - name: configuration
   - name: enriched_data
   - name: danger_condition
+    dataTier: Gold
+  - name: downsampled_data
     dataTier: Gold

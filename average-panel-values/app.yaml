@@ -1,0 +1,20 @@
+name: average-panel-values
+version: 1.0.0
+inputTopics:
+  - name: solar-data-topic
+    description: Input topic with raw solar panel data
+outputTopics:
+  - name: solar-averages-topic
+    description: Output topic for 1-minute average values
+parameters:
+  - name: input
+    inputType: Topic
+    description: Input topic to read solar panel data from
+    required: true
+  - name: output
+    inputType: Topic
+    description: Output topic to write average values to
+    required: true
+dockerfile: Dockerfile
+runEntryPoint: main.py
+defaultFile: main.py
