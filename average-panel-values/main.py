@@ -1,8 +1,9 @@
 from quixstreams import Application, State
-from quixstreams.models.serializers.quix import JSONDeserializer, JSONSerializer, QuixTimeseriesSerializer
+from quixstreams.models.serializers.quix import JSONDeserializer, QuixTimeseriesSerializer
 import os
 import json
 import logging
+from datetime import datetime, timedelta
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -26,11 +27,48 @@ output_topic = app.topic(
     value_serializer=QuixTimeseriesSerializer()
 )
 
-def calculate_average(window_data):
-    print(window_data)
+def process_message(value):
+    """Extract and process the data from the message."""
+    try:
+        # The actual data is in the 'data' field
+        data = value.get('data', {})
+        if not data:
+            return None
+            
+        # Parse timestamp if it's a string
+        timestamp = value.get('timestamp')
+        if isinstance(timestamp, str):
+            try:
+                timestamp = int(datetime.fromisoformat(timestamp).timestamp() * 1000000000)  # Convert to ns
+            except (ValueError, TypeError):
+                timestamp = int(datetime.now().timestamp() * 1000000000)
+        
+        return {
+            'panel_id': data.get('panel_id'),
+            'location_id': data.get('location_id'),
+            'location_name': data.get('location_name'),
+            'latitude': data.get('latitude'),
+            'longitude': data.get('longitude'),
+            'timezone': data.get('timezone'),
+            'power_output': float(data.get('power_output', 0)),
+            'temperature': float(data.get('temperature', 0)),
+            'irradiance': float(data.get('irradiance', 0)),
+            'voltage': float(data.get('voltage', 0)),
+            'current': float(data.get('current', 0)),
+            'timestamp': timestamp
+        }
+    except Exception as e:
+        logger.error(f"Error processing message: {e}")
+        return None
+
+def calculate_average(panel_data: list):
     """Calculate average values for all metrics in the window."""
-    values = [msg.value for msg in window_data]
-    if not values:
+    if not window_data:
+        return None
+    
+    # Filter out None values
+    panel_data = [data for data in window_data if data is not None]
+    if not panel_data:
         return None
     
     # Initialize sums and counts
@@ -43,35 +81,41 @@ def calculate_average(window_data):
         'panel_count': 0
     }
     
+    # Use the first record for location info
+    first_record = panel_data[0]
+    
     # Sum up all metrics
-    for value in values:
-        metrics['power_output'] += value.get('power_output', 0)
-        metrics['temperature'] += value.get('temperature', 0)
-        metrics['irradiance'] += value.get('irradiance', 0)
-        metrics['voltage'] += value.get('voltage', 0)
-        metrics['current'] += value.get('current', 0)
+    for data in panel_data:
+        metrics['power_output'] += data.get('power_output', 0)
+        metrics['temperature'] += data.get('temperature', 0)
+        metrics['irradiance'] += data.get('irradiance', 0)
+        metrics['voltage'] += data.get('voltage', 0)
+        metrics['current'] += data.get('current', 0)
         metrics['panel_count'] += 1
     
     # Calculate averages
     count = metrics.pop('panel_count')
     if count == 0:
         return None
-        
+    
+    # Get the latest timestamp in the window
+    latest_timestamp = max(data.get('timestamp', 0) for data in panel_data)
+    
     result = {
-        'location_id': values[0].get('location_id'),
-        'location_name': values[0].get('location_name'),
-        'latitude': values[0].get('latitude'),
-        'longitude': values[0].get('longitude'),
-        'timezone': values[0].get('timezone'),
-        'timestamp': values[-1].get('timestamp', 0),  # Use the latest timestamp in the window
+        'location_id': first_record.get('location_id'),
+        'location_name': first_record.get('location_name'),
+        'latitude': first_record.get('latitude'),
+        'longitude': first_record.get('longitude'),
+        'timezone': first_record.get('timezone'),
+        'timestamp': latest_timestamp,
         'panel_count': count,
         'avg_power_output': metrics['power_output'] / count,
         'avg_temperature': metrics['temperature'] / count,
         'avg_irradiance': metrics['irradiance'] / count,
         'avg_voltage': metrics['voltage'] / count,
         'avg_current': metrics['current'] / count,
-        'window_start': values[0].get('timestamp', 0),
-        'window_end': values[-1].get('timestamp', 0)
+        'window_end': latest_timestamp,
+        'window_start': latest_timestamp - 60_000_000_000  # 1 minute in nanoseconds
     }
     
     return result
@@ -79,14 +123,24 @@ def calculate_average(window_data):
 # Create a streaming dataframe from the input topic
 sdf = app.dataframe(input_topic)
 
-# Apply windowing and aggregation
-sdf = sdf.apply(
-    func=calculate_average,
-    stateful=False,
-    expand=False,
-    metadata=False
-).update(
-    lambda value: logger.info(f"Processed window: {value}") or value
+# Process each message to extract the data
+sdf = sdf.apply(process_message)
+
+# Group by location
+sdf = sdf.group_by(lambda x: x.get('location_id') if x else None)
+
+# Define a 1-minute window
+window_size = timedelta(minutes=1)
+
+# Apply the window and aggregation
+sdf = sdf.window(window_size).aggregate(
+    calculate_average,
+    stateful=False
+)
+
+# Log the results
+sdf = sdf.update(
+    lambda value: logger.info(f"Processed window: {json.dumps(value, default=str)}") or value
 )
 
 # Send the result to the output topic
