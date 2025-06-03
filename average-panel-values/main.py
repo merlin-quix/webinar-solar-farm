@@ -1,6 +1,5 @@
 from quixstreams import Application, State
 from quixstreams.models.serializers.quix import JSONDeserializer, JSONSerializer, QuixTimeseriesSerializer
-from quixstreams.dataframe import WindowTime
 import os
 import json
 import logging
