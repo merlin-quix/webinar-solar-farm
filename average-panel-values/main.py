@@ -1,7 +1,6 @@
 from quixstreams import Application, State
 from quixstreams.models.serializers.quix import JSONDeserializer, JSONSerializer, QuixTimeseriesSerializer
 import os
-import json
 import logging
 
 # Set up logging
