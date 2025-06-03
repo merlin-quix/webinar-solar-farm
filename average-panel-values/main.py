@@ -27,6 +27,7 @@ output_topic = app.topic(
 )
 
 def calculate_average(window_data):
+    print(window_data)
     """Calculate average values for all metrics in the window."""
     values = [msg.value for msg in window_data]
     if not values:
