@@ -20,6 +20,11 @@ deployments:
         description: Name of the output topic to write into
         required: true
         value: solar-farm
+      - name: location
+        inputType: FreeText
+        description: The location of the solar farm
+        required: true
+        value: LONDON
   - name: Configuration Listener
     application: configuration-data
     version: latest
