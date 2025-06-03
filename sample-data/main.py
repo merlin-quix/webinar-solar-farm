@@ -149,9 +149,11 @@ class SolarDataGenerator(Source):
         solar_intensity = self._get_solar_intensity(hour)
         
         # Temperature varies with solar intensity and time of day
+        # Daytime heating
+        # Extra warming in afternoon
         temperature = self.base_temp + \
-                     (solar_intensity * 15) + \  # Daytime heating
-                     (0.5 * (hour - 12) / 6)     # Extra warming in afternoon
+                     (solar_intensity * 15) + \
+                     (0.5 * (hour - 12) / 6)     
         
         # Calculate degradation factor (very small per-second degradation)
         degradation = 1.0 - (self.panel_ages[panel.panel_id] * panel.degradation_rate / (365 * 24 * 3600))
