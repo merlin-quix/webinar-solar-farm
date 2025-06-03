@@ -61,64 +61,70 @@ def process_message(value):
         logger.error(f"Error processing message: {e}")
         return None
 
-def calculate_average(panel_data: list):
-    """Calculate average values for all metrics in the window."""
-    if not window_data:
-        return None
-    
-    # Filter out None values
-    panel_data = [data for data in window_data if data is not None]
-    if not panel_data:
-        return None
-    
-    # Initialize sums and counts
-    metrics = {
-        'power_output': 0.0,
-        'temperature': 0.0,
-        'irradiance': 0.0,
-        'voltage': 0.0,
-        'current': 0.0,
-        'panel_count': 0
-    }
-    
-    # Use the first record for location info
-    first_record = panel_data[0]
-    
-    # Sum up all metrics
-    for data in panel_data:
-        metrics['power_output'] += data.get('power_output', 0)
-        metrics['temperature'] += data.get('temperature', 0)
-        metrics['irradiance'] += data.get('irradiance', 0)
-        metrics['voltage'] += data.get('voltage', 0)
-        metrics['current'] += data.get('current', 0)
-        metrics['panel_count'] += 1
-    
-    # Calculate averages
-    count = metrics.pop('panel_count')
-    if count == 0:
-        return None
-    
-    # Get the latest timestamp in the window
-    latest_timestamp = max(data.get('timestamp', 0) for data in panel_data)
-    
-    result = {
-        'location_id': first_record.get('location_id'),
-        'location_name': first_record.get('location_name'),
-        'latitude': first_record.get('latitude'),
-        'longitude': first_record.get('longitude'),
-        'timezone': first_record.get('timezone'),
-        'timestamp': latest_timestamp,
-        'panel_count': count,
-        'avg_power_output': metrics['power_output'] / count,
-        'avg_temperature': metrics['temperature'] / count,
-        'avg_irradiance': metrics['irradiance'] / count,
-        'avg_voltage': metrics['voltage'] / count,
-        'avg_current': metrics['current'] / count,
-        'window_end': latest_timestamp,
-        'window_start': latest_timestamp - 60_000_000_000  # 1 minute in nanoseconds
-    }
-    
-    return result
+from quixstreams.dataframe.windows import Aggregator
+
+class PanelAggregator(Aggregator):
+    def initialize(self):
+        return {
+            'power_output_sum': 0.0,
+            'temperature_sum': 0.0,
+            'irradiance_sum': 0.0,
+            'voltage_sum': 0.0,
+            'current_sum': 0.0,
+            'panel_count': 0,
+            'location_info': None,
+            'latest_timestamp': 0
+        }
+
+    def agg(self, old, new, ts):
+        # Store location info from the first record
+        if old['location_info'] is None:
+            old['location_info'] = {
+                'location_id': new.get('location_id'),
+                'location_name': new.get('location_name'),
+                'latitude': new.get('latitude'),
+                'longitude': new.get('longitude'),
+                'timezone': new.get('timezone')
+            }
+        
+        # Update metrics
+        old['power_output_sum'] += float(new.get('power_output', 0))
+        old['temperature_sum'] += float(new.get('temperature', 0))
+        old['irradiance_sum'] += float(new.get('irradiance', 0))
+        old['voltage_sum'] += float(new.get('voltage', 0))
+        old['current_sum'] += float(new.get('current', 0))
+        old['panel_count'] += 1
+        
+        # Track the latest timestamp
+        timestamp = new.get('timestamp', 0)
+        if timestamp > old['latest_timestamp']:
+            old['latest_timestamp'] = timestamp
+            
+        return old
+
+    def result(self, stored):
+        if stored['panel_count'] == 0:
+            return None
+            
+        location = stored['location_info'] or {}
+        count = stored['panel_count']
+        
+        return {
+            'location_id': location.get('location_id'),
+            'location_name': location.get('location_name'),
+            'latitude': location.get('latitude'),
+            'longitude': location.get('longitude'),
+            'timezone': location.get('timezone'),
+            'timestamp': stored['latest_timestamp'],
+            'panel_count': count,
+            'avg_power_output': stored['power_output_sum'] / count,
+            'avg_temperature': stored['temperature_sum'] / count,
+            'avg_irradiance': stored['irradiance_sum'] / count,
+            'avg_voltage': stored['voltage_sum'] / count,
+            'avg_current': stored['current_sum'] / count,
+            'window_end': stored['latest_timestamp'],
+            'window_start': stored['latest_timestamp'] - 60_000_000_000  # 1 minute in ns
+        }
 
 # Create a streaming dataframe from the input topic
 sdf = app.dataframe(input_topic)
@@ -126,19 +132,15 @@ sdf = app.dataframe(input_topic)
 # Process each message to extract the data
 sdf = sdf.apply(process_message)
 
-# Group by location
-sdf = sdf.group_by(
-    key=lambda x: x.get('location_id') if x else None,
-    name="group_by_location"
-)
-
-# Define a 1-minute window
+# Define a 1-minute window and apply aggregation
 window_size = timedelta(minutes=1)
 
 # Apply the window and aggregation
-sdf = sdf.window(window_size).aggregate(
-    calculate_average,
-    stateful=False
+sdf = (
+    # sdf.group_by(lambda x: x.get('location_id') if x else None)
+    .tumbling_window(window_size)
+    .agg(value=PanelAggregator())
+    .current()
 )
 
 # Log the results
