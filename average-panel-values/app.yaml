@@ -9,7 +9,9 @@ variables:
     required: true
   - name: output
     inputType: OutputTopic
+    multiline: false
     description: Output topic to write average values to
+    defaultValue: downsampled_data
     required: true
 dockerfile: Dockerfile
 runEntryPoint: main.py
