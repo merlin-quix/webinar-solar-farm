@@ -214,8 +214,8 @@ class SolarDataGenerator(Source):
                     # Add timestamp
                     event["timestamp"] = self.current_time
                     
-                    # Serialize and produce the event
-                    event_serialized = self.serialize(key=event["panel_id"], value=event)
+                    # Serialize and produce the event with location_name as key
+                    event_serialized = self.serialize(key=event["location_name"], value=event)
                     self.produce(key=event_serialized.key, value=event_serialized.value)
                 
                 if self.current_time % 10 == 0:  # Print every 10 seconds to reduce noise
