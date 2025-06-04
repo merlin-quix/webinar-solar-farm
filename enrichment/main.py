@@ -29,6 +29,14 @@ def on_merge(left: dict, right: dict):
     right['timestamp'] = str(datetime.fromtimestamp(right['timestamp']/1000/1000/1000))
     return {"timestamp": date_str, "data": left, "config": right}
 
+# data_sdf = data_sdf.apply(lambda row: row, metadata=True)
+def groupby_custom(message):
+    print(message)
+    return message["store_id"] + "--" + message["item"]
+
+data_sdf = data_sdf.group_by(groupby_custom, name="unique_name")
+# data_sdf = data_sdf.group_by("new_key")
+
 # Join the latest effective config with the data
 data_sdf = data_sdf.join_asof(config_sdf, on_merge=on_merge)
 
