@@ -258,6 +258,32 @@ deployments:
         inputType: FreeText
         description: The number of seconds that the sink holds before flushing data to PostgreSQL.
         value: 1
+  - name: Grafana
+    application: grafana
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 200
+      memory: 800
+      replicas: 1
+    publicAccess:
+      enabled: true
+      urlPrefix: grafana
+    network:
+      serviceName: grafana
+      ports:
+        - port: 80
+          targetPort: 3000
+    variables:
+      - name: GF_SECURITY_ADMIN_PASSWORD
+        inputType: Secret
+        description: Password for the admin user
+        required: true
+        secretKey: grafana_admin_password
+      - name: INFLUXDB_TOKEN
+        inputType: Secret
+        description: The optional InfluxDB Token to use
+        secretKey: grafana_admin_password
 
 # This section describes the Topics of the data pipeline
 topics:
