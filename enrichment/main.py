@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = Application(
-    consumer_group="enrichment-v1",
+    consumer_group="enrichment-v2",
     auto_offset_reset="earliest",
     use_changelog_topics=False,
     )
