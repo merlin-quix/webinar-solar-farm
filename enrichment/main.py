@@ -35,9 +35,9 @@ def groupby_custom(message):
     print(message)
     return message["store_id"] + "--" + message["item"]
 
-data_sdf.print()
+# data_sdf.print()
 
-# data_sdf = data_sdf.group_by(groupby_custom, name="unique_name")
+data_sdf = data_sdf.group_by(groupby_custom, name="unique_name")
 # data_sdf = data_sdf.group_by("new_key")
 
 # Join the latest effective config with the data
