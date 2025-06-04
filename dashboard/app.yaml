@@ -1,5 +1,0 @@
-name: Dashboard
-language: python
-dockerfile: dockerfile
-runEntryPoint: main.py
-defaultFile: main.py
