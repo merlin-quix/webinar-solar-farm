@@ -32,6 +32,7 @@ def on_merge(left: dict, right: dict):
 
 # data_sdf = data_sdf.group_by(groupby_custom, name="unique_name")
 data_sdf = data_sdf.group_by("location_id")
+config_sdf = config_sdf.group_by("location")
 
 print("/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*")
 # data_sdf.print(metadata=True)
