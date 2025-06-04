@@ -47,7 +47,7 @@ config_sdf.print(metadata=True)
 data_sdf = data_sdf.join_asof(
     config_sdf,
     on_merge=on_merge,
-    store_name="join_store"
+    name="join_store"
 )
 
 # Send the message to the output topic
