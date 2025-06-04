@@ -31,6 +31,7 @@ def on_merge(left: dict, right: dict):
 
 # data_sdf = data_sdf.apply(lambda row: row, metadata=True)
 def groupby_custom(message):
+    print("=========================")
     print(message)
     return message["store_id"] + "--" + message["item"]
 
