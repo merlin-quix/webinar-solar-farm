@@ -44,7 +44,8 @@ data_sdf = data_sdf.join_asof(config_sdf, on_merge=on_merge)
 # Send the message to the output topic
 # data_sdf.to_topic(output_topic)
 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
-data_sdf.print(metadata=True)
+# data_sdf.print(metadata=True)
+data_sdf.print_table()
 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
 
 if __name__ == "__main__":
