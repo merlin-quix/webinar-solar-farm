@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize the Quix Application
 app = Application(
-    consumer_group="average-panel-values",
+    consumer_group="average-panel-values_v2",
     auto_create_topics=True,
     auto_offset_reset="latest"
 )
