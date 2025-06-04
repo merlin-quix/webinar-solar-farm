@@ -6,25 +6,6 @@ metadata:
 
 # This section describes the Deployments of the data pipeline
 deployments:
-  - name: Solar Fire Detection
-    application: detect-danger
-    version: latest
-    deploymentType: Service
-    resources:
-      cpu: 200
-      memory: 500
-      replicas: 1
-    variables:
-      - name: input
-        inputType: InputTopic
-        description: This is the input topic for f1 data
-        required: true
-        value: enriched_data
-      - name: output
-        inputType: OutputTopic
-        description: This is the output topic for hard braking events
-        required: true
-        value: danger_condition
   - name: Solar Config Enrichment
     application: enrichment
     version: latest
@@ -304,6 +285,25 @@ deployments:
         inputType: FreeText
         description: The number of seconds that sink waits before flushing data to MongoDB
         value: 1
+  - name: Critical Event Detection
+    application: detect-danger
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 200
+      memory: 500
+      replicas: 1
+    variables:
+      - name: input
+        inputType: InputTopic
+        description: This is the input topic for f1 data
+        required: true
+        value: enriched_data
+      - name: output
+        inputType: OutputTopic
+        description: This is the output topic for hard braking events
+        required: true
+        value: danger_condition
 
 # This section describes the Topics of the data pipeline
 topics:
