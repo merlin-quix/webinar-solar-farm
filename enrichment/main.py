@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Initialize the application with state management enabled
-app = Application.Quix(
+app = Application(
     consumer_group="enrichment-v3",
     auto_offset_reset="earliest",
     use_changelog_topics=True,  # Enable changelog topics for state management
