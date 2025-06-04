@@ -155,6 +155,30 @@ deployments:
         description: Output topic to write average values to
         required: true
         value: downsampled_data
+  - name: MongoDB
+    application: mongodb
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 200
+      memory: 800
+      replicas: 1
+    network:
+      serviceName: mongodb
+      ports:
+        - port: 27017
+          targetPort: 27017
+    variables:
+      - name: MONGO_INITDB_ROOT_USERNAME
+        inputType: FreeText
+        description: The root username to initialize MongoDB with
+        required: true
+        value: admin
+      - name: MONGO_INITDB_ROOT_PASSWORD
+        inputType: Secret
+        description: The root password to initialize MongoDB with
+        required: true
+        secretKey: mongo_root_password
 
 # This section describes the Topics of the data pipeline
 topics:
