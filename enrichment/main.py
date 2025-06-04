@@ -35,7 +35,7 @@ data_sdf = data_sdf.group_by("location_id")
 
 print("/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*")
 # data_sdf.print(metadata=True)
-# config_sdf.print(metadata=True)
+config_sdf.print(metadata=True)
 print("/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*")
 
 # Join the latest effective config with the data
