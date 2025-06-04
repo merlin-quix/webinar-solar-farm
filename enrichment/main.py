@@ -34,17 +34,17 @@ def on_merge(left: dict, right: dict):
 data_sdf = data_sdf.group_by("location_id")
 config_sdf = config_sdf.group_by("location")
 
-# data_sdf.print(metadata=True)
+data_sdf.print(metadata=True)
 config_sdf.print(metadata=True)
 
 # Join the latest effective config with the data
-# data_sdf = data_sdf.join_asof(config_sdf, on_merge=on_merge)
+data_sdf = data_sdf.join_asof(config_sdf, on_merge=on_merge)
 
 # Send the message to the output topic
 # data_sdf.to_topic(output_topic)
 
 # data_sdf.print(metadata=True)
-# data_sdf.print_table()
+data_sdf.print_table()
 
 
 if __name__ == "__main__":
