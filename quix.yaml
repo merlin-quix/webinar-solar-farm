@@ -211,7 +211,7 @@ deployments:
         inputType: FreeText
         description: Host address for the PostgreSQL instance.
         required: true
-        value: postgresql
+        value: postgresql-demo-solarfarmdatageneratordemo-prod.demo.quix.io
       - name: POSTGRES_PORT
         inputType: FreeText
         description: Port number for the PostgreSQL instance.
