@@ -33,6 +33,11 @@ def on_merge(left: dict, right: dict):
 # data_sdf = data_sdf.group_by(groupby_custom, name="unique_name")
 data_sdf = data_sdf.group_by("location_id")
 
+print("/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*")
+data_sdf.print(metadata=True)
+config_sdf.print(metadata=True)
+print("/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*")
+
 # Join the latest effective config with the data
 data_sdf = data_sdf.join_asof(config_sdf, on_merge=on_merge)
 
