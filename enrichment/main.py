@@ -33,7 +33,7 @@ def on_merge(left: dict, right: dict):
 def groupby_custom(message):
     print("=========================")
     print(message)
-    return message["store_id"] + "--" + message["item"]
+    return message["location_id"]
 
 # data_sdf.print()
 
