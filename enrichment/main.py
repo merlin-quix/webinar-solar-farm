@@ -32,12 +32,12 @@ def on_merge(left: dict, right: dict):
 # data_sdf = data_sdf.apply(lambda row: row, metadata=True)
 def groupby_custom(message):
     print("=========================")
-    print(message)
+    # print(message)
     return message["location_id"]
 
-# data_sdf.print()
 
 data_sdf = data_sdf.group_by(groupby_custom, name="unique_name")
+data_sdf.print()
 # data_sdf = data_sdf.group_by("new_key")
 
 # Join the latest effective config with the data
