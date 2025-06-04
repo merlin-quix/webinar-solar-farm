@@ -1,2 +1,2 @@
 python-dotenv
-quixstreams==3.15.0
+quixstreams==3.16.0
