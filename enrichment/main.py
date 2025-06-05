@@ -34,7 +34,7 @@ def get_config_for_location(location):
 
 config_sdf.apply(save_config)
 
-data_sdf.print_table()
+data_sdf.apply(lambda row: print(row["location_id"]))
 
 # Create nice JSON alert message.
 data_sdf = data_sdf.apply(lambda row: {
