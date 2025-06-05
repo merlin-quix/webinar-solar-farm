@@ -104,6 +104,7 @@ class PanelAggregator(Aggregator):
             'location_name': location.get('location_name'),
             'panel_count': count,
             'avg_power_output': stored['power_output_sum'] / count,
+            'panels': []
         }
 
 # Create a streaming dataframe from the input topic
