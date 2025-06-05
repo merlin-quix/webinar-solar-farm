@@ -69,8 +69,8 @@ class PanelAggregator(Aggregator):
         return {
             'power_output_sum': 0.0,
             'location_info': None,
-            'location_panel_count': [],
-            'location_panels': []
+            'location_panel_count': {},
+            'location_panels': {}
         }
 
     def agg(self, old, new, ts):
