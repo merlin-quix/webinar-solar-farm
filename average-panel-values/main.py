@@ -4,6 +4,7 @@ import os
 import json
 import logging
 from datetime import datetime, timedelta
+from quixstreams.dataframe.windows import Mean
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -166,7 +167,7 @@ sdf["power"] = sdf["data"]["power_output"]
 sdf = sdf[["power"]]
 sdf = (
     sdf.tumbling_window(timedelta(minutes=1))
-    .agg(p="power")
+    .agg(p=Mean("power"))
     .current()
 )
 sdf.print()
