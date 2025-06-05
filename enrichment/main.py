@@ -22,9 +22,9 @@ last_config = {}
 def save_config(data):
     global last_config
     last_config[data["location"]] = data
-    print("--config------")
-    print(last_config)
-    print("--------------")
+    # print("--config------")
+    # print(last_config)
+    # print("--------------")
 
 def get_config_for_location(location):
     if location in last_config:
@@ -45,7 +45,7 @@ data_sdf = data_sdf.apply(lambda row: {
 })
 
 # Print JSON messages in console.
-data_sdf.print()
+# data_sdf.print()
 
 # Send the message to the output topic
 data_sdf.to_topic(output_topic)
