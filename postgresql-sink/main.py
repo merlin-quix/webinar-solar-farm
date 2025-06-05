@@ -30,7 +30,7 @@ input_topic = app.topic(os.environ["input"], key_deserializer="string")
 
 # Process and sink data
 sdf = app.dataframe(input_topic)
-# sdf.sink(postgres_sink)
-sdf.print()
+sdf.sink(postgres_sink)
+# sdf.print()
 if __name__ == "__main__":
     app.run(sdf)
