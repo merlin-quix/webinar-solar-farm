@@ -1,5 +1,5 @@
 from quixstreams import Application, State
-from quixstreams.models.serializers.quix import JSONDeserializer, QuixTimeseriesSerializer
+from quixstreams.models.serializers.quix import JSONDeserializer
 import os
 import json
 import logging
@@ -24,8 +24,7 @@ input_topic = app.topic(
 )
 
 output_topic = app.topic(
-    name=os.environ["output"],
-    value_serializer=QuixTimeseriesSerializer()
+    name=os.environ["output"]
 )
 
 def process_message(value):
