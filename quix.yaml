@@ -11,8 +11,8 @@ deployments:
     version: latest
     deploymentType: Service
     resources:
-      cpu: 4000
-      memory: 1000
+      cpu: 8000
+      memory: 4000
       replicas: 1
     state:
       enabled: true
