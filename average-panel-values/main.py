@@ -162,12 +162,13 @@ sdf = app.dataframe(input_topic)
 
 # Define a 1-minute window and apply aggregation
 # window_size = timedelta(minutes=1)
-
-sdf = (
-    sdf.tumbling_window(timedelta(minutes=1))
-    .agg(avg_temperature=3)
-    .current()
-)
+sdf = sdf["data"]["power_output"]
+sdf.print()
+# sdf = (
+#     sdf.tumbling_window(timedelta(minutes=1))
+#     .agg(avg_temperature=)
+#     .current()
+# )
 
 # Apply the window and aggregation
 # sdf = (
@@ -184,7 +185,7 @@ sdf = (
 
 # Send the result to the output topic
 # sdf = sdf.to_topic(output_topic)
-sdf.print()
+# sdf.print()
 if __name__ == "__main__":
     logger.info("Starting Average Panel Values service...")
     app.run(sdf)
