@@ -166,6 +166,7 @@ sdf = app.dataframe(input_topic)
 sdf = (
     sdf.tumbling_window(timedelta(minutes=1))
     .count()
+    .print()
 )
 
 # Apply the window and aggregation
