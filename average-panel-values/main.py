@@ -162,7 +162,7 @@ sdf = app.dataframe(input_topic)
 
 # Define a 1-minute window and apply aggregation
 # window_size = timedelta(minutes=1)
-sdf = sdf["data"]["power_output"]
+# sdf = sdf["data"]["power_output"]
 sdf.print()
 # sdf = (
 #     sdf.tumbling_window(timedelta(minutes=1))
