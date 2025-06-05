@@ -55,7 +55,7 @@ sdf = sdf[sdf.contains('danger_detected')]
 sdf = sdf[sdf['danger_detected'] == True]
 
 # Send the message to the output topic
-# sdf.to_topic(output_topic)
+sdf.to_topic(output_topic)
 
 if __name__ == '__main__':
     app.run()
