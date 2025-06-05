@@ -48,13 +48,11 @@ def check_for_danger(row):
 sdf = sdf.apply(check_for_danger)
 #         .hopping_window(1000, 200).mean().final() 
 
-# sdf = sdf[sdf.contains('data')]
 
-# sdf.apply(lambda row: print(row['danger']))
-
+sdf.print()
+sdf = sdf[sdf.contains('danger_detected')]
 # Filter only windows where danger is True
 sdf = sdf[sdf['danger_detected'] == True]
-sdf.print()
 
 # Send the message to the output topic
 # sdf.to_topic(output_topic)
