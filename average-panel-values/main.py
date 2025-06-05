@@ -128,7 +128,7 @@ class PanelAggregator(Aggregator):
         return old
 
     def result(self, stored):
-        if stored['panel_count'] == 0:
+        if stored['location_panel_count'] == {}:
             return None
             
         location = stored['location_info'] or {}
@@ -137,7 +137,6 @@ class PanelAggregator(Aggregator):
         return {
             'location_id': location.get('location_id'),
             'location_name': location.get('location_name'),
-            'panel_count': count,
             'avg_power_output': stored['power_output_sum'] / count,
             'location_panels': [],
             'location_panel_count': {}
