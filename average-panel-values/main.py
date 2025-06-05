@@ -68,13 +68,7 @@ class PanelAggregator(Aggregator):
     def initialize(self):
         return {
             'power_output_sum': 0.0,
-            'temperature_sum': 0.0,
-            'irradiance_sum': 0.0,
-            'voltage_sum': 0.0,
-            'current_sum': 0.0,
-            'panel_count': 0,
             'location_info': None,
-            'latest_timestamp': 0
         }
 
     def agg(self, old, new, ts):
@@ -83,24 +77,12 @@ class PanelAggregator(Aggregator):
             old['location_info'] = {
                 'location_id': new.get('location_id'),
                 'location_name': new.get('location_name'),
-                'latitude': new.get('latitude'),
-                'longitude': new.get('longitude'),
-                'timezone': new.get('timezone')
             }
         
         # Update metrics
         old['power_output_sum'] += float(new.get('power_output', 0))
-        old['temperature_sum'] += float(new.get('temperature', 0))
-        old['irradiance_sum'] += float(new.get('irradiance', 0))
-        old['voltage_sum'] += float(new.get('voltage', 0))
-        old['current_sum'] += float(new.get('current', 0))
         old['panel_count'] += 1
         
-        # Track the latest timestamp
-        timestamp = new.get('timestamp', 0)
-        if timestamp > old['latest_timestamp']:
-            old['latest_timestamp'] = timestamp
-            
         return old
 
     def result(self, stored):
@@ -113,18 +95,8 @@ class PanelAggregator(Aggregator):
         return {
             'location_id': location.get('location_id'),
             'location_name': location.get('location_name'),
-            'latitude': location.get('latitude'),
-            'longitude': location.get('longitude'),
-            'timezone': location.get('timezone'),
-            'timestamp': stored['latest_timestamp'],
             'panel_count': count,
             'avg_power_output': stored['power_output_sum'] / count,
-            'avg_temperature': stored['temperature_sum'] / count,
-            'avg_irradiance': stored['irradiance_sum'] / count,
-            'avg_voltage': stored['voltage_sum'] / count,
-            'avg_current': stored['current_sum'] / count,
-            'window_end': stored['latest_timestamp'],
-            'window_start': stored['latest_timestamp'] - 60_000_000_000  # 1 minute in ns
         }
 
 # Create a streaming dataframe from the input topic
