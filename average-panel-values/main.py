@@ -106,15 +106,15 @@ sdf = app.dataframe(input_topic)
 sdf = sdf.apply(process_message)
 
 # Define a 1-minute window and apply aggregation
-# window_size = timedelta(minutes=1)
+window_size = timedelta(minutes=1)
 
 # Apply the window and aggregation
-# sdf = (
-#     # sdf.group_by(lambda x: x.get('location_id') if x else None)
-#     sdf.tumbling_window(window_size)
-#     .agg(value=PanelAggregator())
-#     .current()
-# )
+sdf = (
+    # sdf.group_by(lambda x: x.get('location_id') if x else None)
+    sdf.tumbling_window(window_size)
+    .agg(value=PanelAggregator())
+    .current()
+)
 
 # Log the results
 sdf = sdf.update(
