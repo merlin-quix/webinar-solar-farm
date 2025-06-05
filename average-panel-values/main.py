@@ -114,18 +114,23 @@ class PanelAggregator(Aggregator):
             logger.error(f"Error processing location_id {location_id}: {e}")
             return old
 
-        print("--new----")
-        print(new)
-        print("--old----")
-        print(old)
-        
-        if location_id not in old['location_panels']:
-            old['location_panels'][location_id].append(panel_id)
-            old['location_panel_count'][location_id] = 1
-        else:
-            old['location_panel_count'][location_id] += 1
+        try:
+            # Add panel_id to the location's panel list if it's not already there
+            if panel_id not in old['location_panels'][location_id]:
+                old['location_panels'][location_id].append(panel_id)
+                old['location_panel_count'][location_id] = len(old['location_panels'][location_id])
+                
+            # Debug output
+            print(f"-- Updated state for location {location_id} --")
+            print(f"Panel IDs: {old['location_panels'][location_id]}")
+            print(f"Panel count: {old['location_panel_count'][location_id]}")
             
-        return old
+            return old
+            
+        except Exception as e:
+            logger.error(f"Error updating panel data for location {location_id}: {e}")
+            logger.error(f"Current state: {old}")
+            return old
 
     def result(self, stored):
         if not stored['location_panel_count']:
