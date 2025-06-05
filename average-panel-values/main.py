@@ -165,8 +165,8 @@ sdf = app.dataframe(input_topic)
 
 sdf = (
     sdf.tumbling_window(timedelta(minutes=1))
-    .count()
-    .print()
+    .agg(avg_temperature=3)
+    .current()
 )
 
 # Apply the window and aggregation
