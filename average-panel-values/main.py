@@ -84,10 +84,10 @@ class PanelAggregator(Aggregator):
         old['power_output_sum'] += float(new.get('power_output', 0))
         print(new)
         panel = ""
-        if panel in old['panels']:
-            ...
-        else:
-            old['panel_count'] += 1
+        # if panel in old['panels']:
+        #     ...
+        # else:
+        #     old['panel_count'] += 1
         
         return old
 
