@@ -187,6 +187,8 @@ sdf = (
 #     lambda value: logger.info(f"Processed window: {json.dumps(value, default=str)}") or value
 # )
 
+print(sdf)
+
 # Send the result to the output topic
 sdf = sdf.to_topic(output_topic)
 
