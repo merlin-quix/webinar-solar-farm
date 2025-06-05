@@ -158,36 +158,38 @@ class PanelAggregator(Aggregator):
 # Create a streaming dataframe from the input topic
 sdf = app.dataframe(input_topic)
 
-# Process each message to extract the data
-# sdf = sdf.apply(process_message)
-
-# Define a 1-minute window and apply aggregation
-# window_size = timedelta(minutes=1)
-sdf["power"] = sdf["data"]["power_output"]
-sdf = sdf[["power"]]
-sdf = (
-    sdf.tumbling_window(timedelta(minutes=1))
-    .agg(p=Mean("power"))
-    .current()
-)
-sdf.print()
-
-# Apply the window and aggregation
+## test window
+# sdf["power"] = sdf["data"]["power_output"]
+# sdf = sdf[["power"]]
 # sdf = (
-#     # sdf.group_by(lambda x: x.get('location_id') if x else None)
-#     sdf.tumbling_window(window_size)
-#     .agg(value=PanelAggregator())
+#     sdf.tumbling_window(timedelta(minutes=1))
+#     .agg(p=Mean("power"))
 #     .current()
 # )
+# sdf.print()
+
+
+# Process each message to extract the data
+sdf = sdf.apply(process_message)
+
+# Define a 1-minute window and apply aggregation
+window_size = timedelta(minutes=1)
+# Apply the window and aggregation
+sdf = (
+    # sdf.group_by(lambda x: x.get('location_id') if x else None)
+    sdf.tumbling_window(window_size)
+    .agg(value=PanelAggregator())
+    .current()
+)
 
 # Log the results
-# sdf = sdf.update(
-#     lambda value: logger.info(f"Processed window: {json.dumps(value, default=str)}") or value
-# )
+sdf = sdf.update(
+    lambda value: logger.info(f"Processed window: {json.dumps(value, default=str)}") or value
+)
 
 # Send the result to the output topic
-# sdf = sdf.to_topic(output_topic)
-# sdf.print()
+sdf = sdf.to_topic(output_topic)
+
 if __name__ == "__main__":
     logger.info("Starting Average Panel Values service...")
     app.run(sdf)
