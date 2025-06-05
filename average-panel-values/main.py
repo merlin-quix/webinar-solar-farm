@@ -37,6 +37,7 @@ def process_message(value):
             
         # Parse timestamp if it's a string
         timestamp = value.get('timestamp')
+        print("1")
         if isinstance(timestamp, str):
             try:
                 timestamp = int(datetime.fromisoformat(timestamp).timestamp() * 1000000000)  # Convert to ns
@@ -133,15 +134,15 @@ sdf = app.dataframe(input_topic)
 sdf = sdf.apply(process_message)
 
 # Define a 1-minute window and apply aggregation
-window_size = timedelta(minutes=1)
+# window_size = timedelta(minutes=1)
 
 # Apply the window and aggregation
-sdf = (
-    # sdf.group_by(lambda x: x.get('location_id') if x else None)
-    sdf.tumbling_window(window_size)
-    .agg(value=PanelAggregator())
-    .current()
-)
+# sdf = (
+#     # sdf.group_by(lambda x: x.get('location_id') if x else None)
+#     sdf.tumbling_window(window_size)
+#     .agg(value=PanelAggregator())
+#     .current()
+# )
 
 # Log the results
 sdf = sdf.update(
@@ -149,7 +150,7 @@ sdf = sdf.update(
 )
 
 # Send the result to the output topic
-sdf = sdf.to_topic(output_topic)
+# sdf = sdf.to_topic(output_topic)
 
 if __name__ == "__main__":
     logger.info("Starting Average Panel Values service...")
