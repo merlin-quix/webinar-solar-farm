@@ -186,7 +186,26 @@ sdf = (
 #     lambda value: logger.info(f"Processed window: {json.dumps(value, default=str)}") or value
 # )
 
-sdf = sdf[["value"]]
+# sdf = sdf[["value"]]
+
+def flatten_window_result(row):
+    if not row or 'value' not in row:
+        return None
+    
+    value = row['value']
+    if not value:
+        return None
+        
+    # Add window timestamps to the value
+    value.update({
+        'window_start': row.get('start'),
+        'window_end': row.get('end')
+    })
+    return value
+
+# Apply the flattening function
+sdf = sdf.apply(flatten_window_result)
+
 print(sdf)
 
 # Send the result to the output topic
