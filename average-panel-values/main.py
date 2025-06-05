@@ -158,27 +158,27 @@ class PanelAggregator(Aggregator):
 sdf = app.dataframe(input_topic)
 
 # Process each message to extract the data
-sdf = sdf.apply(process_message)
+# sdf = sdf.apply(process_message)
 
 # Define a 1-minute window and apply aggregation
-window_size = timedelta(minutes=1)
+# window_size = timedelta(minutes=1)
 
 # Apply the window and aggregation
-sdf = (
-    # sdf.group_by(lambda x: x.get('location_id') if x else None)
-    sdf.tumbling_window(window_size)
-    .agg(value=PanelAggregator())
-    .current()
-)
+# sdf = (
+#     # sdf.group_by(lambda x: x.get('location_id') if x else None)
+#     sdf.tumbling_window(window_size)
+#     .agg(value=PanelAggregator())
+#     .current()
+# )
 
 # Log the results
-sdf = sdf.update(
-    lambda value: logger.info(f"Processed window: {json.dumps(value, default=str)}") or value
-)
+# sdf = sdf.update(
+#     lambda value: logger.info(f"Processed window: {json.dumps(value, default=str)}") or value
+# )
 
 # Send the result to the output topic
-sdf = sdf.to_topic(output_topic)
-
+# sdf = sdf.to_topic(output_topic)
+sdf.print()
 if __name__ == "__main__":
     logger.info("Starting Average Panel Values service...")
     app.run(sdf)
