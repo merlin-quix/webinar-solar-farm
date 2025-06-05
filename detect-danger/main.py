@@ -53,7 +53,7 @@ sdf = sdf.apply(check_for_danger)
 # sdf.apply(lambda row: print(row['danger']))
 
 # Filter only windows where danger is True
-# sdf = sdf[sdf['danger'] == True]
+sdf = sdf[sdf['danger'] == True]
 sdf.print()
 
 # Send the message to the output topic
