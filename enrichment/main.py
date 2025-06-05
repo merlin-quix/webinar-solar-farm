@@ -21,7 +21,9 @@ last_config = {}
 
 def save_config(data):
     global last_config
+    print("--config------")
     print(data)
+    print("--------------")
     last_config = data
 
 config_sdf.apply(save_config)
