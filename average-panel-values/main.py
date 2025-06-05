@@ -128,18 +128,25 @@ class PanelAggregator(Aggregator):
         return old
 
     def result(self, stored):
-        if stored['location_panel_count'] == {}:
+        if not stored['location_panel_count']:
             return None
             
         location = stored['location_info'] or {}
-        count = stored['panel_count']
+        location_id = location.get('location_id')
         
+        # Calculate average power per panel for each location
+        avg_power_per_panel = {}
+        for loc_id, panel_count in stored['location_panel_count'].items():
+            if panel_count > 0:
+                avg_power_per_panel[loc_id] = stored['power_output_sum'] / panel_count
+        
+        # Return the average power for the current location
         return {
-            'location_id': location.get('location_id'),
+            'location_id': location_id,
             'location_name': location.get('location_name'),
-            'avg_power_output': stored['power_output_sum'] / count,
-            'location_panels': [],
-            'location_panel_count': {}
+            'avg_power_per_panel': avg_power_per_panel.get(location_id, 0),
+            'panel_count': stored['location_panel_count'].get(location_id, 0),
+            'timestamp': int(datetime.now().timestamp() * 1000)  # Add timestamp for reference
         }
 
 # Create a streaming dataframe from the input topic
