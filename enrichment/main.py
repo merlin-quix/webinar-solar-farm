@@ -34,7 +34,8 @@ def get_config_for_location(location):
 
 config_sdf.apply(save_config)
 
-data_sdf.apply(lambda row: print(row["location_id"]))
+# debug
+# data_sdf.apply(lambda row: print(row["location_id"]))
 
 # Create nice JSON alert message.
 data_sdf = data_sdf.apply(lambda row: {
@@ -44,7 +45,7 @@ data_sdf = data_sdf.apply(lambda row: {
 })
 
 # Print JSON messages in console.
-# data_sdf.print()
+data_sdf.print()
 
 # Send the message to the output topic
 # data_sdf.to_topic(output_topic)
