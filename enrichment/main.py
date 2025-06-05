@@ -37,7 +37,7 @@ data_sdf = data_sdf.apply(lambda row: {
 # data_sdf.print()
 
 # Send the message to the output topic
-data_sdf.to_topic(output_topic)
+# data_sdf.to_topic(output_topic)
 
 if __name__ == "__main__":
     app.run()
