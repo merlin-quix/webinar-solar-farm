@@ -23,6 +23,7 @@ def save_config(data):
     global last_config
     print("--config------")
     print(data)
+    print(data["location"])
     print("--------------")
     last_config = data
 
