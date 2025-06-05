@@ -95,8 +95,8 @@ deployments:
     version: latest
     deploymentType: Service
     resources:
-      cpu: 25400
-      memory: 117300
+      cpu: 3000
+      memory: 6400
       replicas: 1
     variables:
       - name: input
