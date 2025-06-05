@@ -87,13 +87,17 @@ class PanelAggregator(Aggregator):
         panel_id = new.get('panel_id')
         location_id = new.get('location_id')
 
+        # Initialize location_panels as a dictionary if it doesn't exist
         if 'location_panels' not in old:
-           old['location_panels'] = []
-           old['location_panels'][location_id] = []
-                
+            old['location_panels'] = {}
+        if location_id not in old['location_panels']:
+            old['location_panels'][location_id] = []
+            
+        # Initialize location_panel_count as a dictionary if it doesn't exist
         if 'location_panel_count' not in old:
-           old['location_panel_count'] = []
-           old['location_panel_count'][location_id] = 0
+            old['location_panel_count'] = {}
+        if location_id not in old['location_panel_count']:
+            old['location_panel_count'][location_id] = 0
 
         print("--new----")
         print(new)
