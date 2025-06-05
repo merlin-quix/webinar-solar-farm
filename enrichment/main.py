@@ -26,14 +26,21 @@ def save_config(data):
     print(last_config)
     print("--------------")
 
+def get_config_for_location(location):
+    if location in last_config:
+        return last_config[location]
+    else:
+        return {}
 
 config_sdf.apply(save_config)
+
+data_sdf.print_table()
 
 # Create nice JSON alert message.
 data_sdf = data_sdf.apply(lambda row: {
     "timestamp": str(datetime.fromtimestamp(row["timestamp"]/1000/1000/1000)),
     "data": row,
-    "configuration": last_config
+    "configuration": get_config_for_location(row["location_id"])
 })
 
 # Print JSON messages in console.
