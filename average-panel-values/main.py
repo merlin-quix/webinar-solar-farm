@@ -87,6 +87,11 @@ class PanelAggregator(Aggregator):
         panel_id = new.get('panel_id')
         location_id = new.get('location_id')
 
+        # Skip if location_id or panel_id is None
+        if location_id is None or panel_id is None:
+            logger.warning(f"Skipping record with missing location_id or panel_id: {new}")
+            return old
+            
         # Initialize location_panels as a dictionary if it doesn't exist
         if 'location_panels' not in old:
             old['location_panels'] = {}
