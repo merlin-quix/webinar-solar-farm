@@ -23,9 +23,9 @@ def check_for_danger(row):
     # print(row)
     panel_temp = float(row["data"]["temperature"])
 
-    if "forecast_temp" in row["configuration"]:
-        forecast_temp = float(row["configuration"]["forecast_temp"])
-        forecast_cloud = float(row["configuration"]["forecast_cloud"])
+    if "temperature" in row["configuration"]:
+        forecast_temp = float(row["configuration"]["temperature"])
+        forecast_cloud = float(row["configuration"]["cloud_cover"])
     else:
         return {}
 
