@@ -87,22 +87,32 @@ class PanelAggregator(Aggregator):
         panel_id = new.get('panel_id')
         location_id = new.get('location_id')
 
-        # Skip if location_id or panel_id is None
-        if location_id is None or panel_id is None:
-            logger.warning(f"Skipping record with missing location_id or panel_id: {new}")
+        # Ensure location_id and panel_id are valid and hashable
+        try:
+            if (location_id is None or panel_id is None or 
+                not isinstance(location_id, (str, int, float)) or 
+                not str(location_id).strip()):
+                logger.warning(f"Skipping record with invalid location_id or panel_id: {new}")
+                return old
+                
+            # Convert location_id to string to ensure it's hashable
+            location_id = str(location_id).strip()
+            
+            # Initialize location_panels as a dictionary if it doesn't exist
+            if 'location_panels' not in old:
+                old['location_panels'] = {}
+            if location_id not in old['location_panels']:
+                old['location_panels'][location_id] = []
+                
+            # Initialize location_panel_count as a dictionary if it doesn't exist
+            if 'location_panel_count' not in old:
+                old['location_panel_count'] = {}
+            if location_id not in old['location_panel_count']:
+                old['location_panel_count'][location_id] = 0
+                
+        except (TypeError, AttributeError) as e:
+            logger.error(f"Error processing location_id {location_id}: {e}")
             return old
-            
-        # Initialize location_panels as a dictionary if it doesn't exist
-        if 'location_panels' not in old:
-            old['location_panels'] = {}
-        if location_id not in old['location_panels']:
-            old['location_panels'][location_id] = []
-            
-        # Initialize location_panel_count as a dictionary if it doesn't exist
-        if 'location_panel_count' not in old:
-            old['location_panel_count'] = {}
-        if location_id not in old['location_panel_count']:
-            old['location_panel_count'][location_id] = 0
 
         print("--new----")
         print(new)
