@@ -105,8 +105,6 @@ class PanelAggregator(Aggregator):
             old['location_panel_count'][location_id] = 1
         else:
             old['location_panel_count'][location_id] += 1
-            old['location_panel_count'][location_id] += 1
-                      
             
         return old
 
