@@ -85,7 +85,7 @@ class PanelAggregator(Aggregator):
         old['power_output_sum'] += float(new.get('power_output', 0))
         
         if 'panels' not in old:
-           old['panels'] == []
+           old['panels'] = []
            
            
         print("--new----")
