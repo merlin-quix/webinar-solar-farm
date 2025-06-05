@@ -21,11 +21,11 @@ last_config = {}
 
 def save_config(data):
     global last_config
+    last_config[data["location"]] = data
     print("--config------")
-    print(data)
-    print(data["location"])
+    print(last_config)
     print("--------------")
-    last_config = data
+
 
 config_sdf.apply(save_config)
 
