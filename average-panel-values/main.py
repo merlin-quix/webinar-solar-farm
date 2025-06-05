@@ -83,6 +83,11 @@ class PanelAggregator(Aggregator):
         
         # Update metrics
         old['power_output_sum'] += float(new.get('power_output', 0))
+        
+        if 'panels' not in old:
+           old['panels'] == []
+           
+           
         print("--new----")
         print(new)
         print("--old----")
@@ -91,6 +96,7 @@ class PanelAggregator(Aggregator):
 
 
         panel_id = new['panel_id']
+         
         if old['panels'] == [] or panel_id in old['panels']:
              ...
         # else:
