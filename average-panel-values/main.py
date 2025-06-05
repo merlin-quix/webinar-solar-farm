@@ -69,7 +69,8 @@ class PanelAggregator(Aggregator):
         return {
             'power_output_sum': 0.0,
             'location_info': None,
-            'panel_count': 0
+            'panel_count': 0,
+            'panels': []
         }
 
     def agg(self, old, new, ts):
@@ -83,9 +84,9 @@ class PanelAggregator(Aggregator):
         # Update metrics
         old['power_output_sum'] += float(new.get('power_output', 0))
         print(new)
-        panel = ""
-        # if panel in old['panels']:
-        #     ...
+        panel_id = new['panel_id']
+        if old['panels'] == [] or panel_id in old['panels']:
+             ...
         # else:
         #     old['panel_count'] += 1
         
@@ -102,7 +103,8 @@ class PanelAggregator(Aggregator):
             'location_id': location.get('location_id'),
             'location_name': location.get('location_name'),
             'panel_count': count,
-            'avg_power_output': stored['power_output_sum'] / count
+            'avg_power_output': stored['power_output_sum'] / count,
+            'panels': []
         }
 
 # Create a streaming dataframe from the input topic
