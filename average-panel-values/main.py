@@ -164,12 +164,12 @@ sdf = app.dataframe(input_topic)
 # window_size = timedelta(minutes=1)
 sdf["power"] = sdf["data"]["power_output"]
 sdf = sdf[["power"]]
+sdf = (
+    sdf.tumbling_window(timedelta(minutes=1))
+    .agg(p="power")
+    .current()
+)
 sdf.print()
-# sdf = (
-#     sdf.tumbling_window(timedelta(minutes=1))
-#     .agg(avg_temperature=)
-#     .current()
-# )
 
 # Apply the window and aggregation
 # sdf = (
