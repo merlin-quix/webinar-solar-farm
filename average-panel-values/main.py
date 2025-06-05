@@ -163,6 +163,11 @@ sdf = app.dataframe(input_topic)
 # Define a 1-minute window and apply aggregation
 # window_size = timedelta(minutes=1)
 
+sdf = (
+    sdf.tumbling_window(timedelta(minutes=1))
+    .count()
+)
+
 # Apply the window and aggregation
 # sdf = (
 #     # sdf.group_by(lambda x: x.get('location_id') if x else None)
