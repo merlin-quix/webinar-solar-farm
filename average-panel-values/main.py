@@ -156,7 +156,7 @@ class PanelAggregator(Aggregator):
 
 # Create a streaming dataframe from the input topic
 sdf = app.dataframe(input_topic)
-
+sdf.print_table()
 # Process each message to extract the data
 # sdf = sdf.apply(process_message)
 
