@@ -177,7 +177,7 @@ sdf = sdf.update(
 )
 
 # Send the result to the output topic
-# sdf = sdf.to_topic(output_topic)
+sdf = sdf.to_topic(output_topic)
 
 if __name__ == "__main__":
     logger.info("Starting Average Panel Values service...")
