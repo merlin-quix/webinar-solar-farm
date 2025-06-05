@@ -183,9 +183,9 @@ sdf = (
 )
 
 # Log the results
-sdf = sdf.update(
-    lambda value: logger.info(f"Processed window: {json.dumps(value, default=str)}") or value
-)
+# sdf = sdf.update(
+#     lambda value: logger.info(f"Processed window: {json.dumps(value, default=str)}") or value
+# )
 
 # Send the result to the output topic
 sdf = sdf.to_topic(output_topic)
