@@ -69,8 +69,8 @@ class PanelAggregator(Aggregator):
         return {
             'power_output_sum': 0.0,
             'location_info': None,
-            'panel_count': 0,
-            'panels': []
+            'location_panel_count': [],
+            'location_panels': []
         }
 
     def agg(self, old, new, ts):
@@ -84,24 +84,30 @@ class PanelAggregator(Aggregator):
         # Update metrics
         old['power_output_sum'] += float(new.get('power_output', 0))
         
-        if 'panels' not in old:
-           old['panels'] = []
-           
-           
+        panel_id = new.get('panel_id')
+        location_id = new.get('location_id')
+
+        if 'location_panels' not in old:
+           old['location_panels'] = []
+           old['location_panels'][location_id] = []
+                
+        if 'location_panel_count' not in old:
+           old['location_panel_count'] = []
+           old['location_panel_count'][location_id] = 0
+
         print("--new----")
         print(new)
         print("--old----")
         print(old)
-
-
-
-        panel_id = new['panel_id']
-         
-        if old['panels'] == [] or panel_id in old['panels']:
-             ...
-        # else:
-        #     old['panel_count'] += 1
         
+        if location_id not in old['location_panels']:
+            old['location_panels'][location_id].append(panel_id)
+            old['location_panel_count'][location_id] = 1
+        else:
+            old['location_panel_count'][location_id] += 1
+            old['location_panel_count'][location_id] += 1
+                      
+            
         return old
 
     def result(self, stored):
