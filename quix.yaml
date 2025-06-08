@@ -61,4 +61,15 @@ deployments:
         description: The default database name to initialize PostgreSQL with
         required: true
         value: quix
+  - name: pgAdmin Database Admin UI
+    application: pgAdmin Database Admin UI
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 200
+      memory: 500
+      replicas: 1
+    publicAccess:
+      enabled: true
+      urlPrefix: pgadmindatabaseadminui-9ceb975
 
