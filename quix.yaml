@@ -156,14 +156,6 @@ deployments:
     publicAccess:
       enabled: true
       urlPrefix: pgadmindatabaseadminui-9ceb975
-  - name: Solar Panel Aggregation
-    application: average-panel-values
-    version: 1138e75587c7799a4fab558306044e6fef605ba9
-    deploymentType: Service
-    resources:
-      cpu: 1000
-      memory: 1024
-      replicas: 1
 
 # This section describes the Topics of the data pipeline
 topics:
