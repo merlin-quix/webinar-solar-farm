@@ -102,13 +102,13 @@ def main():
     # Send to output topic
     sdf.to_topic(output_topic)
 
-    # Run with stop conditions for local testing
+    # Start the aggregation service
     print(f"Starting aggregation service...")
     print(f"Input topic: {input_topic.name}")
     print(f"Output topic: {output_topic.name}")
     print(f"Consumer group: {consumer_group}")
     
-    app.run(timeout=30.0, count=100)
+    app.run()
 
 
 # It is recommended to execute Applications under a conditional main
