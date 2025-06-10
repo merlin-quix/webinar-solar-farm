@@ -3,56 +3,68 @@ language: python
 variables:
   - name: input
     inputType: InputTopic
+    multiline: false
     description: This is the input topic
-    defaultValue: input-data
+    defaultValue: downsampled_data
     required: true
   - name: POSTGRES_HOST
     inputType: FreeText
+    multiline: false
     description: Host address for the PostgreSQL instance.
     defaultValue: postgresql
     required: true
   - name: POSTGRES_PORT
     inputType: FreeText
+    multiline: false
     description: Port number for the PostgreSQL instance.
     defaultValue: 80
     required: true
   - name: POSTGRES_DBNAME
     inputType: FreeText
+    multiline: false
     description: Database name in PostgreSQL where data should be stored.
     defaultValue: quix
     required: true
   - name: POSTGRES_USER
     inputType: FreeText
+    multiline: false
     description: Username for the PostgreSQL database.
     defaultValue: admin
     required: true
   - name: POSTGRES_PASSWORD
     inputType: Secret
+    multiline: false
     description: Password for the PostgreSQL database.
     required: true
   - name: POSTGRES_TABLE
     inputType: FreeText
+    multiline: false
     description: The PostgreSQL table where data will be stored. If the table does not exist, it will be created automatically.
     required: true
   - name: POSTGRES_SCHEMA
     inputType: FreeText
+    multiline: false
     description: The schema name. Schemas are a way of organizing tables and not related to the table data, referenced as `<schema_name>.<table_name>`. PostrgeSQL uses 'public' by default under the hood.
     defaultValue: public
   - name: SCHEMA_AUTO_UPDATE
     inputType: FreeText
+    multiline: false
     description: Automatically update the schema by adding new columns when new fields are detected.
     defaultValue: true
   - name: CONSUMER_GROUP_NAME
     inputType: FreeText
+    multiline: false
     description: The name of the consumer group to use when consuming from Kafka
-    defaultValue: postgres-sink
+    defaultValue: postgres-sink-downsampled
     required: true
   - name: BATCH_SIZE
     inputType: FreeText
+    multiline: false
     description: The number of records that the sink holds before flushing data to PostgreSQL.
     defaultValue: 1000
   - name: BATCH_TIMEOUT
     inputType: FreeText
+    multiline: false
     description: The number of seconds that the sink holds before flushing data to PostgreSQL.
     defaultValue: 1
 dockerfile: dockerfile
