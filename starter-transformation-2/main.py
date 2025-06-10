@@ -11,7 +11,7 @@ import os
 
 def main():
     """
-    Transformations generally read from, and produce to, Kafka topics.
+    Transformations generally read from, and produce to Kafka topics.
 
     They are conducted with Applications and their accompanying StreamingDataFrames
     which define what transformations to perform on incoming data.
