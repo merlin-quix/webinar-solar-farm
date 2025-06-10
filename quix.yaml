@@ -77,3 +77,4 @@ deployments:
 topics:
   - name: configuration
   - name: solar-farm
+  - name: enriched-data
