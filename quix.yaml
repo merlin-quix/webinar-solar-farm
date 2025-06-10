@@ -156,25 +156,6 @@ deployments:
     publicAccess:
       enabled: true
       urlPrefix: pgadmindatabaseadminui-9ceb975
-  - name: Solar Panel Aggregation
-    application: average-panel-values
-    version: 9b4e07a
-    deploymentType: Service
-    resources:
-      cpu: 1000
-      memory: 1024
-      replicas: 1
-    variables:
-      - name: input
-        inputType: InputTopic
-        description: Input topic to read solar panel data from
-        required: true
-        value: enriched_data
-      - name: output
-        inputType: OutputTopic
-        description: Output topic to write average values to
-        required: true
-        value: downsampled_data
 
 # This section describes the Topics of the data pipeline
 topics:
