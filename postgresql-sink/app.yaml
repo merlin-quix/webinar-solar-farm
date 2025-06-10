@@ -5,7 +5,7 @@ variables:
     inputType: InputTopic
     multiline: false
     description: This is the input topic
-    defaultValue: enriched-data
+    defaultValue: danger_condition
     required: true
   - name: POSTGRES_HOST
     inputType: FreeText
@@ -55,7 +55,7 @@ variables:
     inputType: FreeText
     multiline: false
     description: The name of the consumer group to use when consuming from Kafka
-    defaultValue: postgres-sink-raw-data
+    defaultValue: postgres-sink-danger-events
     required: true
   - name: BATCH_SIZE
     inputType: FreeText
