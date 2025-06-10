@@ -73,3 +73,6 @@ deployments:
       enabled: true
       urlPrefix: pgadmindatabaseadminui-9ceb975
 
+# This section describes the Topics of the data pipeline
+topics:
+  - name: configuration
