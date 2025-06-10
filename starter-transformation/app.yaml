@@ -4,8 +4,13 @@ variables:
   - name: input
     inputType: InputTopic
     multiline: false
-    description: Name of the input topic to listen to.
+    description: Name of the main data input topic to listen to.
     defaultValue: solar-farm
+  - name: config_input
+    inputType: InputTopic
+    multiline: false
+    description: Name of the configuration input topic to listen to.
+    defaultValue: configuration
   - name: output
     inputType: OutputTopic
     multiline: false
