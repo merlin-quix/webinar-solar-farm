@@ -1,5 +1,0 @@
-name: pgAdmin Database Admin UI
-language: nodejs
-variables: []
-dockerfile: dockerfile
-defaultFile: README.md
