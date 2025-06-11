@@ -4,12 +4,12 @@ variables:
   - name: input
     inputType: InputTopic
     description: This is the input topic for f1 data
-    defaultValue: f1-data
+    defaultValue: enriched-data
     required: true
   - name: output
     inputType: OutputTopic
     description: This is the output topic for hard braking events
-    defaultValue: hard-braking
+    defaultValue: danger-conditions
     required: true
 dockerfile: dockerfile
 runEntryPoint: main.py
