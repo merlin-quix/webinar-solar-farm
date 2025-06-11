@@ -6,31 +6,6 @@ metadata:
 
 # This section describes the Deployments of the data pipeline
 deployments:
-  - name: Solar Config Enrichment
-    application: enrichment
-    version: latest
-    deploymentType: Service
-    resources:
-      cpu: 8000
-      memory: 4000
-      replicas: 1
-    state:
-      enabled: true
-      size: 5
-    variables:
-      - name: data_topic
-        inputType: InputTopic
-        description: This is the input topic for f1 data
-        required: true
-        value: solar-farm
-      - name: output
-        inputType: OutputTopic
-        description: This is the output topic for hard braking events
-        required: true
-        value: enriched_data
-      - name: config_topic
-        inputType: InputTopic
-        value: configuration
   - name: HiveMQ Source
     application: hivemq-source
     version: latest
@@ -323,6 +298,31 @@ deployments:
         inputType: OutputTopic
         description: This is the output topic for hello world data
         required: true
+        value: configuration
+  - name: Weather Condition Enrichment
+    application: enrichment
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 8000
+      memory: 4000
+      replicas: 1
+    state:
+      enabled: true
+      size: 5
+    variables:
+      - name: data_topic
+        inputType: InputTopic
+        description: This is the input topic for f1 data
+        required: true
+        value: solar-farm
+      - name: output
+        inputType: OutputTopic
+        description: This is the output topic for hard braking events
+        required: true
+        value: enriched_data
+      - name: config_topic
+        inputType: InputTopic
         value: configuration
 
 # This section describes the Topics of the data pipeline
