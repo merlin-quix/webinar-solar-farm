@@ -66,3 +66,4 @@ deployments:
 topics:
   - name: weather-data
   - name: solar-farm
+  - name: enriched-data
