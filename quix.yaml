@@ -62,6 +62,3 @@ deployments:
         required: true
         value: quix
 
-# This section describes the Topics of the data pipeline
-topics:
-  - name: weather-data
