@@ -69,3 +69,4 @@ topics:
   - name: enriched-data
   - name: danger_condition
   - name: downsampled_data
+  - name: weather-data
