@@ -31,23 +31,6 @@ deployments:
       - name: config_topic
         inputType: InputTopic
         value: configuration
-  - name: HTTP API Source
-    application: http-api-source
-    version: latest
-    deploymentType: Service
-    resources:
-      cpu: 200
-      memory: 500
-      replicas: 1
-    publicAccess:
-      enabled: true
-      urlPrefix: gateway
-    variables:
-      - name: output
-        inputType: OutputTopic
-        description: This is the output topic for hello world data
-        required: true
-        value: configuration
   - name: HiveMQ Source
     application: hivemq-source
     version: latest
@@ -324,6 +307,23 @@ deployments:
     publicAccess:
       enabled: true
       urlPrefix: pgadmindatabaseadminui-9ceb975
+  - name: HTTP API Weather
+    application: http-api-source
+    version: latest
+    deploymentType: Service
+    resources:
+      cpu: 200
+      memory: 500
+      replicas: 1
+    publicAccess:
+      enabled: true
+      urlPrefix: gateway
+    variables:
+      - name: output
+        inputType: OutputTopic
+        description: This is the output topic for hello world data
+        required: true
+        value: configuration
 
 # This section describes the Topics of the data pipeline
 topics:
