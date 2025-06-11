@@ -68,3 +68,4 @@ topics:
   - name: solar-farm
   - name: enriched-data
   - name: danger-conditions
+  - name: downsampled-data
