@@ -1,28 +1,24 @@
-# import the Quix Streams modules for interacting with Kafka.
-# For general info, see https://quix.io/docs/quix-streams/introduction.html
+#!/usr/bin/env python3
+"""
+Test script for the aggregation service with stop conditions
+"""
 from quixstreams import Application
 from quixstreams.dataframe.windows import Sum, Collect
 from datetime import timedelta, datetime
 import os
+import time
+from dotenv import load_dotenv
 
-# for local dev, load env vars from a .env file
-# from dotenv import load_dotenv
-# load_dotenv()
-
+# Load environment variables from .env file
+load_dotenv()
 
 def main():
-    """
-    Service that aggregates solar panel data per location over 1-minute tumbling windows.
+    # Create temporary consumer group with timestamp
+    consumer_group = f"test_aggregation_{int(time.time())}"
     
-    For each location within each 1-minute window, it calculates:
-    - total_power_output: Sum of power_output from all panels
-    - panel_count: Count of unique panel_id values
-    - avg_power_per_panel: total_power_output / panel_count
-    """
-
     # Setup necessary objects
     app = Application(
-        consumer_group="average-panel-values",
+        consumer_group=consumer_group,
         auto_create_topics=True,
         auto_offset_reset="earliest"
     )
@@ -46,7 +42,7 @@ def main():
     # Group by location_id and apply 1-minute tumbling window with aggregations
     sdf = (
         sdf.group_by("location_id")
-        .tumbling_window(duration_ms=timedelta(minutes=1))
+        .tumbling_window(duration_ms=timedelta(seconds=10))  # 10 second window for testing
         .agg(
             total_power_output=Sum("power_output"),
             panel_ids=Collect("panel_id")
@@ -82,16 +78,27 @@ def main():
     
     sdf = sdf.apply(format_output, metadata=True)
     
-    # Optional: Print results for debugging
+    # Print results for debugging
+    print("Aggregated window results:")
+    print("-" * 80)
     sdf = sdf.print(metadata=False)
     
     # Write results to output topic
     sdf.to_topic(output_topic)
 
-    # Run the Application
-    app.run()
+    # Run the Application with stop conditions
+    print(f"Starting aggregation service...")
+    print(f"Consumer group: {consumer_group}")
+    print(f"Input topic: {os.environ['input']}")
+    print(f"Output topic: {os.environ['output']}")
+    print("Will stop after 1000 messages or 30 seconds...\n")
+    
+    try:
+        app.run(timeout=30.0, count=1000)
+    except Exception as e:
+        print(f"\nError occurred: {e}")
+    
+    print("\nTest completed!")
 
-
-# It is recommended to execute Applications under a conditional main
 if __name__ == "__main__":
     main()
