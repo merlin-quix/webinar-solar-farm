@@ -1,14 +1,19 @@
 name: Dangerous Condition Detection
 language: python
 variables:
-  - name: input
+  - name: weather_input
     inputType: InputTopic
-    description: This is the input topic for f1 data
+    description: Weather data input topic
     defaultValue: weather-data
+    required: true
+  - name: enriched_input
+    inputType: InputTopic
+    description: Enriched data input topic
+    defaultValue: enriched-data
     required: true
   - name: output
     inputType: OutputTopic
-    description: This is the output topic for hard braking events
+    description: Dangerous conditions output topic
     defaultValue: danger-conditions
     required: true
 dockerfile: dockerfile
