@@ -64,5 +64,4 @@ deployments:
 
 # This section describes the Topics of the data pipeline
 topics:
-  - name: solar-farm
   - name: weather-data
