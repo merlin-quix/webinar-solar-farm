@@ -1,6 +1,0 @@
-name: Average Panel App
-language: python
-dockerfile: dockerfile
-runEntryPoint: main.py
-defaultFile: main.py
-libraryItemId: streamlit
