@@ -1,12 +1,7 @@
 name: Dangerous Condition Detection
 language: python
 variables:
-  - name: weather_input
-    inputType: InputTopic
-    description: Weather data input topic
-    defaultValue: weather-data
-    required: true
-  - name: enriched_input
+  - name: input
     inputType: InputTopic
     description: Enriched data input topic
     defaultValue: enriched-data
