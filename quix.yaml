@@ -66,6 +66,5 @@ deployments:
 topics:
   - name: solar-farm
   - name: enriched-data
-  - name: danger_condition
   - name: downsampled_data
   - name: weather-data
