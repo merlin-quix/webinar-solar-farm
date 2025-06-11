@@ -164,5 +164,3 @@ topics:
   - name: enriched_data
   - name: danger_condition
     dataTier: Gold
-  - name: downsampled_data
-    dataTier: Gold
