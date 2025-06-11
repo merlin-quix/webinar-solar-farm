@@ -160,5 +160,4 @@ deployments:
 # This section describes the Topics of the data pipeline
 topics:
   - name: solar-farm
-  - name: configuration
   - name: enriched_data
