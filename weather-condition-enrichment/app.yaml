@@ -1,14 +1,21 @@
 name: Weather Condition Enrichment
 language: python
 variables:
-  - name: input
+  - name: weather_input
     inputType: InputTopic
-    description: Name of the input topic to listen to.
-    defaultValue: csv-data
+    description: Weather data input topic
+    defaultValue: weather-data
+    required: true
+  - name: solar_input
+    inputType: InputTopic
+    description: Solar farm data input topic
+    defaultValue: solar-farm
+    required: true
   - name: output
     inputType: OutputTopic
-    description: Name of the output topic to write to.
-    defaultValue: transform
+    description: Enriched data output topic
+    defaultValue: enriched-data
+    required: true
 dockerfile: dockerfile
 runEntryPoint: main.py
 defaultFile: main.py
