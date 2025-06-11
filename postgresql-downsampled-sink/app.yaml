@@ -4,7 +4,7 @@ variables:
   - name: input
     inputType: InputTopic
     description: This is the input topic
-    defaultValue: downsampled-data
+    defaultValue: downsampled_data
     required: true
   - name: POSTGRES_HOST
     inputType: FreeText
