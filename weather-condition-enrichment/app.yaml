@@ -3,12 +3,22 @@ language: python
 variables:
   - name: input
     inputType: InputTopic
-    description: Name of the input topic to listen to.
+    multiline: false
+    description: Weather data input topic
     defaultValue: weather-data
+    required: true
+  - name: solar_input
+    inputType: InputTopic
+    multiline: false
+    description: Solar farm data input topic
+    defaultValue: solar-farm
+    required: true
   - name: output
     inputType: OutputTopic
-    description: Name of the output topic to write to.
+    multiline: false
+    description: Enriched data output topic
     defaultValue: enriched-data
+    required: true
 dockerfile: dockerfile
 runEntryPoint: main.py
 defaultFile: main.py
