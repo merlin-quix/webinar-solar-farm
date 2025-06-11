@@ -4,6 +4,7 @@ variables:
   - name: output
     inputType: OutputTopic
     description: Name of the output topic to publish to.
+    defaultValue: solar-farm
     required: true
   - name: mqtt_topic
     inputType: FreeText
