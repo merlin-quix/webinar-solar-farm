@@ -8,7 +8,7 @@ variables:
   - name: output
     inputType: OutputTopic
     description: Name of the output topic to write to.
-    defaultValue: downsampled-data
+    defaultValue: downsampled_data
 dockerfile: dockerfile
 runEntryPoint: main.py
 defaultFile: main.py
