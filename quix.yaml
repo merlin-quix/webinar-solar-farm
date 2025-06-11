@@ -161,3 +161,4 @@ deployments:
 topics:
   - name: enriched_data
   - name: solar-farm
+  - name: configuration
