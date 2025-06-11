@@ -286,25 +286,6 @@ deployments:
       - name: config_topic
         inputType: InputTopic
         value: configuration
-  - name: Aggregation by Location
-    application: average-panel-values
-    version: latest
-    deploymentType: Service
-    resources:
-      cpu: 3000
-      memory: 6400
-      replicas: 1
-    variables:
-      - name: input
-        inputType: InputTopic
-        description: Input topic to read solar panel data from
-        required: true
-        value: enriched_data
-      - name: output
-        inputType: OutputTopic
-        description: Output topic to write average values to
-        required: true
-        value: downsampled_data
   - name: Dangerous Condition Detection
     application: detect-danger
     version: latest
