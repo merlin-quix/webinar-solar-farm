@@ -4,11 +4,11 @@ variables:
   - name: input
     inputType: InputTopic
     description: Name of the input topic to listen to.
-    defaultValue: csv-data
+    defaultValue: weather-data
   - name: output
     inputType: OutputTopic
     description: Name of the output topic to write to.
-    defaultValue: transform
+    defaultValue: enriched-data
 dockerfile: dockerfile
 runEntryPoint: main.py
 defaultFile: main.py
