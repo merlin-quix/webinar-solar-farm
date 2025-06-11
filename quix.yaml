@@ -305,6 +305,17 @@ deployments:
         description: This is the output topic for hard braking events
         required: true
         value: danger_condition
+  - name: Average Panel App
+    application: average-panel-app
+    version: HEAD
+    deploymentType: Service
+    resources:
+      cpu: 1000
+      memory: 1024
+      replicas: 1
+    publicAccess:
+      enabled: true
+      urlPrefix: average-panel
 
 # This section describes the Topics of the data pipeline
 topics:
